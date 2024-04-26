@@ -1,5 +1,5 @@
 const {body,validationResult} = require('express-validator');
-const PostgraduateStudies = require('../models/PostgraduateStudiesModel');
+const db = require('../models/index');
 const httpStatusText = require('../utils/httpStatusText')
 const fs = require('fs');
 const asyncWrapper = require('../middleware/asyncWrapper')
@@ -9,42 +9,41 @@ const util = require('util');
 
 const unlinkAsync = util.promisify(fs.unlink);
 
+
+
+//get all requests
 const getPostGraduateRequest =asyncWrapper(
     async (req,res)=>{
     const query = req.query
-    //get all courses
     const limit = query.limit || 10;
     const page = query.page || 1;
     const skip = (page - 1) * limit
-    const requests = await PostgraduateStudies.find({},{'__v':false}).limit(limit).skip(skip);
+    const requests = await db.postgraduateStudies.findAll();
     res.json({"status":httpStatusText.SUCCESS,
             "data":{"requests":requests}
         });
 }
 );
 
-
+// Make a post graduate request
 const ApplyPostGrad = asyncWrapper(async (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         const postData = { ...req.body};
-        
-        // Handle file uploads for fields containing "Cert"
         const certFields = ['personalPhoto','bachelorsCertificate','militaryCertificate','dataForm','informationForm','armedForcesApproval','officersApproval','scoreReport','birthCertificate','adisCertificate','workplaceApproval','diplomaCertificate','candidacyLetter']
 
         for (const field of certFields) {
-            if (req.files && req.files[field]!==undefined) {
+            if (req.files && req.files[field]) {
                 // Save file path to the corresponding field
                 postData[field] = req.files[field][0]['path'];
             }
         }
-        console.log(await PostgraduateStudies(postData));
-        //Save the request to the database
-        // const newPostReq =  PostgraduateStudies().build(postData);
-        // console.log(newPostReq )
-        //await newPostReq.save();
 
-        //res.status(201).json({ status: httpStatusText.SUCCESS, data: { request: request } });
+        //Save the request to the database
+        const newPostReq =  db.postgraduateStudies.build(postData);
+        await newPostReq.save();
+
+        res.status(201).json({ status: httpStatusText.SUCCESS, data: { request: newPostReq } });
     } else {
         // Delete uploaded file if there are validation errors
         if (req.file) {
