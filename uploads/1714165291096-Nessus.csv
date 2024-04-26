@@ -1,0 +1,69 @@
+summary,Description,Recommendation,Attachments,Assignee,Reporter,Affected System,Technology,IP/URL,Port,Operating System,Components,Vulnerability Rating,CVSS,CVE,CIA,Actor,Vector,OWASP,TestType,Start Date
+SSH Server CBC Mode Ciphers Enabled,"The SSH server is configured to use Cipher Block Chaining.The SSH server is configured to support Cipher Block Chaining (CBC)
+encryption.  This may allow an attacker to recover the plaintext message
+from the ciphertext. 
+
+Note that this plugin only checks for the options of the SSH server and
+does not check for vulnerable software versions.","Contact the vendor or consult product documentation to disable CBC mode
+cipher encryption, and enable CTR or GCM cipher mode encryption.",,,,,SSH,10.91.1.15,22,Unknown,,Low,3,CVE-2008-5161,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
+SSH Weak MAC Algorithms Enabled,"The remote SSH server is configured to allow MD5 and 96-bit MAC
+algorithms.The remote SSH server is configured to allow either MD5 or 96-bit MAC
+algorithms, both of which are considered weak.
+
+Note that this plugin only checks for the options of the SSH server,
+and it does not check for vulnerable software versions.","Contact the vendor or consult product documentation to disable MD5 and
+96-bit MAC algorithms.",,,,,SSH,10.91.1.15,22,Unknown,,Low,3,,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
+SSH Weak Key Exchange Algorithms Enabled,"The remote SSH server is configured to allow weak key exchange algorithms.The remote SSH server is configured to allow key exchange algorithms which are considered weak.
+
+This is based on the IETF draft document Key Exchange (KEX) Method Updates and Recommendations for Secure Shell (SSH)
+draft-ietf-curdle-ssh-kex-sha2-20. Section 4 lists guidance on key exchange algorithms that SHOULD NOT and MUST NOT be
+enabled. This includes:
+
+  diffie-hellman-group-exchange-sha1
+
+  diffie-hellman-group1-sha1
+
+  gss-gex-sha1-*
+
+  gss-group1-sha1-*
+
+  gss-group14-sha1-*
+
+  rsa1024-sha1
+
+Note that this plugin only checks for the options of the SSH server, and it does not check for vulnerable software
+versions.",Contact the vendor or consult product documentation to disable the weak algorithms.,,,,,SSH,10.91.1.15,22,Unknown,,Low,3,,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
+SSH Server CBC Mode Ciphers Enabled,"The SSH server is configured to use Cipher Block Chaining.The SSH server is configured to support Cipher Block Chaining (CBC)
+encryption.  This may allow an attacker to recover the plaintext message
+from the ciphertext. 
+
+Note that this plugin only checks for the options of the SSH server and
+does not check for vulnerable software versions.","Contact the vendor or consult product documentation to disable CBC mode
+cipher encryption, and enable CTR or GCM cipher mode encryption.",,,,,SSH,10.91.1.38,22,Unknown,,Low,3,CVE-2008-5161,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
+SSH Weak MAC Algorithms Enabled,"The remote SSH server is configured to allow MD5 and 96-bit MAC
+algorithms.The remote SSH server is configured to allow either MD5 or 96-bit MAC
+algorithms, both of which are considered weak.
+
+Note that this plugin only checks for the options of the SSH server,
+and it does not check for vulnerable software versions.","Contact the vendor or consult product documentation to disable MD5 and
+96-bit MAC algorithms.",,,,,SSH,10.91.1.38,22,Unknown,,Low,3,,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
+SSH Weak Key Exchange Algorithms Enabled,"The remote SSH server is configured to allow weak key exchange algorithms.The remote SSH server is configured to allow key exchange algorithms which are considered weak.
+
+This is based on the IETF draft document Key Exchange (KEX) Method Updates and Recommendations for Secure Shell (SSH)
+draft-ietf-curdle-ssh-kex-sha2-20. Section 4 lists guidance on key exchange algorithms that SHOULD NOT and MUST NOT be
+enabled. This includes:
+
+  diffie-hellman-group-exchange-sha1
+
+  diffie-hellman-group1-sha1
+
+  gss-gex-sha1-*
+
+  gss-group1-sha1-*
+
+  gss-group14-sha1-*
+
+  rsa1024-sha1
+
+Note that this plugin only checks for the options of the SSH server, and it does not check for vulnerable software
+versions.",Contact the vendor or consult product documentation to disable the weak algorithms.,,,,,SSH,10.91.1.38,22,Unknown,,Low,3,,,Unauthenticated,Internal,,DSVA,04/17/2024,Nessus
