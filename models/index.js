@@ -1,8 +1,8 @@
 const dbconfig = require('../config/dbconfig');
 const {Sequelize, DataTypes} = require('sequelize');
 
-const sequelize = new Sequelize(dbconfig.database, dbconfig.username, dbconfig.password, {
-    host: dbconfig.host,
+const sequelize = new Sequelize(dbconfig.DB, dbconfig.USER, dbconfig.PASSWORD, {
+    host: dbconfig.HOST,
     dialect: dbconfig.dialect,
     pool: {
         max: 5,
@@ -42,8 +42,4 @@ db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
 
-db.sequelize.sync({ force: false })
-.then(() => {
-    console.log('yes re-sync done!')
-})
-
+module.exports = db;
