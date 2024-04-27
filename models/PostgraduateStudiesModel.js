@@ -2,6 +2,11 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 module.exports = (Sequelize, DataTypes) => {
     const PostgraduateStudies = Sequelize.define("PostgraduateStudies" , {
+        applicationId: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
         Studies: {
             type: DataTypes.STRING,
             allowNull: false

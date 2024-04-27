@@ -1,8 +1,8 @@
 const dbconfig = require('../config/dbconfig');
-const {Sequelize, DataTypes} = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 
-const sequelize = new Sequelize(dbconfig.database, dbconfig.username, dbconfig.password, {
-    host: dbconfig.host,
+const sequelize = new Sequelize(dbconfig.DB, dbconfig.USER, dbconfig.PASSWORD, {
+    host: dbconfig.HOST,
     dialect: dbconfig.dialect,
     pool: {
         max: 5,
@@ -13,12 +13,12 @@ const sequelize = new Sequelize(dbconfig.database, dbconfig.username, dbconfig.p
 });
 
 sequelize.authenticate()
-.then(()=> {
-    console.log('Connection has been established successfully.');
-})
-.catch((err) => {
-    console.error('Unable to connect to the database:', err);
-})
+    .then(() => {
+        console.log('Connection has been established successfully.');
+    })
+    .catch((err) => {
+        console.error('Unable to connect to the database:', err);
+    })
 
 const db = {}
 
@@ -43,7 +43,39 @@ db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync({ force: false })
-.then(() => {
-    console.log('yes re-sync done!')
-})
+    .then(() => {
+        console.log('yes re-sync done!')
+    })
 
+// relationships graduate,admin,superAdmin is a user
+db.graduate.belongsTo(db.user)
+db.admin.belongsTo(db.user)
+db.superAdmin.belongsTo(db.user)
+
+//relationship between graduates and department
+db.graduate.belongsTo(db.department)
+
+//relationship between graduates and companies
+db.graduate.belongsToMany(db.company, { through: db.work_in })
+db.company.belongsToMany(db.graduate, { through: db.work_in })
+
+db.postgraduateStudies.belongsTo(db.graduate)
+
+db.application.belongsTo(db.graduate)
+db.application.belongsTo(db.job)
+
+db.job.belongsTo(db.admin)
+
+db.course.belongsTo(db.department)
+
+db.post.belongsTo(db.admin)
+
+db.notification.belongsTo(db.user)
+
+db.response.belongsTo(db.graduate)
+db.response.belongsTo(db.admin)
+
+db.request.belongsTo(db.graduate)
+
+db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
+db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
