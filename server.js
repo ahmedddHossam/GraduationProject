@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 
 const app = express();
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+const router = require('./routes/graduateRouter')
 
 // var corsOptions = {
 //     origin: 'http://localhost:8081'
@@ -10,6 +13,12 @@ const app = express();
 // app.use(cors(corsOptions));
 // app.use(express.json);
 // app.use(express.urlencoded({ extended: true }));
+
+
+// add graduate api
+
+app.use('/api/graduates', router)
+
 
 app.get('/', (req, res) => {
     return res.send('AhmedHossam');
