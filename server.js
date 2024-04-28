@@ -20,6 +20,7 @@ const router = require('./routes/graduateRouter')
 app.use('/api/graduates', router)
 
 
+
 app.get('/', (req, res) => {
     return res.send('AhmedHossam');
 });
