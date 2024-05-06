@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const postGraduateRouter = require('./routes/postGraduate.routes');
+const printRouter = require('./routes/prints.routes');
 const app = express();
 const path = require('path');
 const db = require("./models/index.js");
@@ -17,8 +18,10 @@ db.sequelize.sync({ force: false })
 // app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
+app.use('/documents',express.static(path.join(__dirname,'documents')));
 
 app.use('/api/post-graduate/',postGraduateRouter);
+app.use('/api/print/',printRouter);
 
 
 const PORT = process.env.PORT || 5000

@@ -1,0 +1,58 @@
+const {body,validationResult} = require('express-validator');
+const db = require('../models/index');
+const httpStatusText = require('../utils/httpStatusText')
+const fs = require('fs');
+const asyncWrapper = require('../middleware/asyncWrapper')
+const appError = require('../utils/appError')
+const util = require('util');
+const path = require('path');
+const PizZip = require("pizzip");
+const Docxtemplater = require("docxtemplater");
+
+
+
+//print grad
+const grad =asyncWrapper(
+    async (req,res)=> {
+        const data = req.body;
+        const templatePath = path.resolve(__dirname, '../documents/testGrad.docx')
+        const content = fs.readFileSync(
+            templatePath,
+            "binary"
+        );
+        // Unzip the content of the file
+        const zip = new PizZip(content);
+
+// This will parse the template, and will throw an error if the template is
+// invalid, for example, if the template is "{user" (no closing tag)
+        const doc = new Docxtemplater(zip, {
+            paragraphLoop: true,
+            linebreaks: true,
+        });
+
+        // Render the document (Replace {first_name} by John, {last_name} by Doe, ...)
+        doc.render(data);
+
+        // Get the zip document and generate it as a nodebuffer
+        const buf = doc.getZip().generate({
+            type: "nodebuffer",
+            // compression: DEFLATE adds a compression step.
+            // For a 50MB output document, expect 500ms additional CPU time
+            compression: "DEFLATE",
+        });
+
+// buf is a nodejs Buffer, you can either write it to a
+// file or res.send it with express for example.
+        // Set response headers to indicate the file type and attachment
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        res.setHeader("Content-Disposition", "attachment; filename=output.docx");
+
+        // Send the buffer as response
+        return res.status(200).send(buf);
+    }
+);
+
+
+module.exports ={
+    grad
+}
