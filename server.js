@@ -2,6 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const postGraduateRouter = require('./routes/postGraduate.routes');
 const app = express();
+
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+const router = require('./routes/graduateRouter')
+
 const path = require('path');
 const db = require("./models/index.js");
 db.sequelize.sync({ force: false })
@@ -15,6 +20,12 @@ db.sequelize.sync({ force: false })
 // app.use(cors(corsOptions));
 // app.use(express.json);
 // app.use(express.urlencoded({ extended: true }));
+
+
+// add graduate api
+
+app.use('/api/graduates', router)
+
 
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 
