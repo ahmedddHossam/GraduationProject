@@ -7,6 +7,7 @@ const appError = require('../utils/appError')
 const util = require('util');
 const path = require('path');
 const PizZip = require("pizzip");
+const moment = require("moment");
 const Docxtemplater = require("docxtemplater");
 
 
@@ -15,7 +16,9 @@ const Docxtemplater = require("docxtemplater");
 const grad =asyncWrapper(
     async (req,res)=> {
         const data = req.body;
-        const templatePath = path.resolve(__dirname, '../documents/testGrad.docx')
+        console.log(data);
+        data.issue_date = String(moment().format('YYYY-MM-DD'));
+        const templatePath = path.resolve(__dirname, '../documents/EnglishCert.docx')
         const content = fs.readFileSync(
             templatePath,
             "binary"
@@ -35,17 +38,22 @@ const grad =asyncWrapper(
 
         // Get the zip document and generate it as a nodebuffer
         const buf = doc.getZip().generate({
-            type: "nodebuffer",
+            type: 'nodebuffer',
             // compression: DEFLATE adds a compression step.
             // For a 50MB output document, expect 500ms additional CPU time
-            compression: "DEFLATE",
+            compression: 'DEFLATE',
         });
 
-// buf is a nodejs Buffer, you can either write it to a
-// file or res.send it with express for example.
+        // Define the output path
+        const outputPath = path.resolve(__dirname, '../documents/output.docx');
+
+        // Write the buffer to a file
+        fs.writeFileSync(outputPath, buf);
+
+        // Optionally, you can also send the file as a response
         // Set response headers to indicate the file type and attachment
-        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        res.setHeader("Content-Disposition", "attachment; filename=output.docx");
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', `attachment; filename=output.docx`);
 
         // Send the buffer as response
         return res.status(200).send(buf);

@@ -5,6 +5,7 @@ const printRouter = require('./routes/prints.routes');
 const app = express();
 const path = require('path');
 const db = require("./models/index.js");
+app.use(express.json());
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')
