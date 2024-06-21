@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const postGraduateRouter = require('./routes/postGraduate.routes');
+const printRouter = require('./routes/prints.routes');
 const app = express();
 
 app.use(express.json())
@@ -9,6 +10,7 @@ const router = require('./routes/graduateRouter')
 
 const path = require('path');
 const db = require("./models/index.js");
+app.use(express.json());
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')
@@ -28,8 +30,10 @@ app.use('/api/graduates', router)
 
 
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
+app.use('/documents',express.static(path.join(__dirname,'documents')));
 
 app.use('/api/post-graduate/',postGraduateRouter);
+app.use('/api/print/',printRouter);
 
 
 const PORT = process.env.PORT || 5000
