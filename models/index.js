@@ -83,3 +83,4 @@ db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
 db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
 
 module.exports = db;
+
