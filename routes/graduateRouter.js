@@ -1,14 +1,30 @@
 const { Model } = require('sequelize')
 const graduateController = require('../controllers/graduateController')
+const TokenManipulation = require('../utils/TokenManipulation');
+const allowedTo = require('../middleware/allowedTo')
 
 const express = require('express')
 
 const router = express.Router()
 
-router.post('/addGraduate', graduateController.addGraduate)
-router.get('/getGraduate/:GraduateId', graduateController.getOneGraduate)
-router.get('/getAllGraduates', graduateController.getAllGraduates)
-router.put('/updateGraduate/:GraduateId', graduateController.updateGraduate)
-router.delete('/deleteGraduate/:GraduateId', graduateController.deleteGraduate)
+router.post('/addGraduate',
+    TokenManipulation.verifyToken,allowedTo("Admin"),
+    graduateController.addGraduate)
+
+router.get('/getGraduate/:GraduateId',
+    TokenManipulation.verifyToken,allowedTo("Admin"),
+    graduateController.getOneGraduate)
+
+router.get('/getAllGraduates',
+    TokenManipulation.verifyToken,allowedTo("Admin"),
+    graduateController.getAllGraduates)
+
+router.put('/updateGraduate/:GraduateId',
+    TokenManipulation.verifyToken,allowedTo("Admin")
+    ,graduateController.updateGraduate)
+
+router.delete('/deleteGraduate/:GraduateId',
+    TokenManipulation.verifyToken,allowedTo("Admin")
+    ,graduateController.deleteGraduate)
 
 module.exports = router

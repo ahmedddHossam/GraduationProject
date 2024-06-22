@@ -2,11 +2,14 @@ const express = require('express');
 const {body} = require('express-validator');
 const  {ApplyPostGrad,getPostGraduateRequest,getCourseWithID,Update,deleteCourse} = require('../controllers/postGraduate.controller.js');
 const upload = require('../middleware/upload');
+const TokenManipulation = require("../utils/TokenManipulation");
+const allowedTo = require("../middleware/allowedTo");
 const router = express.Router();
 
 
 router.route('/')
-        .get(getPostGraduateRequest) // get all the data from server
+        .get(TokenManipulation.verifyToken,allowedTo("Admin")
+            ,getPostGraduateRequest) // get all the data from server
         .post(upload.fields([
                 { name: 'personalPhoto', maxCount: 1 },
                 { name: 'bachelorsCertificate', maxCount: 1 },
@@ -22,6 +25,7 @@ router.route('/')
                 { name: 'candidacyLetter', maxCount: 1 },
                 { name: 'adisCertificate', maxCount: 1 },
               ]),
+            TokenManipulation.verifyToken,allowedTo("Admin"),
             ApplyPostGrad) // add new course to the list
 
 

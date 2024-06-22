@@ -9,13 +9,15 @@ module.exports = (Sequelize, DataTypes) => {
         },
         Status: {
             type: DataTypes.STRING,
-            allowNull: false
+            defaultValue : "Pending"
         },
         TImestamp: {
             type: DataTypes.DATE,
             allowNull: false
-        }
-        
+        },
+        cvPath : DataTypes.STRING
+
+
     })
 
     return Application;

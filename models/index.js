@@ -43,7 +43,7 @@ db.request = require('./requestModel.js')(sequelize, DataTypes)
 db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
-
+db.jobPublishNotification = require('./JobPublishNotification')(sequelize, DataTypes)
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')
@@ -67,6 +67,12 @@ db.application.belongsTo(db.graduate)
 db.application.belongsTo(db.job)
 
 db.job.belongsTo(db.admin)
+
+db.jobPublishNotification.belongsTo(db.graduate)
+db.jobPublishNotification.belongsTo(db.job)
+
+
+
 
 db.course.belongsTo(db.department)
 
