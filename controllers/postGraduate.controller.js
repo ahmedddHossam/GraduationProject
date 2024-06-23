@@ -6,13 +6,14 @@ const asyncWrapper = require('../middleware/asyncWrapper')
 const appError = require('../utils/appError')
 const upload = require('../middleware/upload')
 const util = require('util');
+const moment = require("moment");
 
 const unlinkAsync = util.promisify(fs.unlink);
 
 
 
 //get all requests
-const getPostGraduateRequest =asyncWrapper(
+const getPostGraduateAllRequest =asyncWrapper(
     async (req,res)=>{
     const query = req.query
     const limit = query.limit || 10;
@@ -25,20 +26,45 @@ const getPostGraduateRequest =asyncWrapper(
 }
 );
 
+//get requests
+const getPostGraduateRequest =asyncWrapper(
+    async (req,res)=>{
+        const {id} = req.params;
+        const request = await db.postgraduateStudies.findByPk(id);
+        res.json({"status":httpStatusText.SUCCESS,
+            "data":{"request":request}
+        });
+    }
+);
+
+const updateStatus = asyncWrapper(
+    async (req,res)=>{
+        const data = req.body;
+        console.log(data)
+        const request = await db.postgraduateStudies.update(
+            { 'Status': data.Status }, // values to update
+            { where: { 'applicationId': data.applicationId } } // options
+        );
+        if(request){
+            return res.json({"status":httpStatusText.SUCCESS,data:"SUCCESS"});
+        }
+    }
+)
+
 // Make a post graduate request
 const ApplyPostGrad = asyncWrapper(async (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         const postData = { ...req.body};
-        const certFields = ['personalPhoto','bachelorsCertificate','militaryCertificate','dataForm','informationForm','armedForcesApproval','officersApproval','scoreReport','birthCertificate','adisCertificate','workplaceApproval','diplomaCertificate','candidacyLetter']
+        const certFields = ['personalPhoto','bachelorsCertificate','militaryCertificate','dataForm','informationForm','armedForcesApproval','officersApproval','scoreReport','birthCertificate','workplaceApproval','nationalIdCard'];
 
         for (const field of certFields) {
             if (req.files && req.files[field]) {
                 // Save file path to the corresponding field
-                postData[field] = req.files[field][0]['path'];
+                postData[field] = String(req.files[field][0]['path']);
             }
         }
-
+        console.log(postData);
         //Save the request to the database
         const newPostReq =  db.postgraduateStudies.build(postData);
         await newPostReq.save();
@@ -55,5 +81,5 @@ const ApplyPostGrad = asyncWrapper(async (req, res) => {
 
 
 module.exports ={
-    getPostGraduateRequest,ApplyPostGrad
+    getPostGraduateRequest,ApplyPostGrad,getPostGraduateAllRequest,updateStatus
 }

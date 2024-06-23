@@ -3,25 +3,27 @@ const cors = require('cors');
 const postGraduateRouter = require('./routes/postGraduate.routes');
 const printRouter = require('./routes/prints.routes');
 const app = express();
-const path = require('path');
-const db = require("./models/index.js");
-app.use(express.json());
-db.sequelize.sync({ force: false })
-    .then(() => {
-        console.log('yes re-sync done!')
-    })
-// var corsOptions = {
-//     origin: 'http://localhost:8081'
-// }
 
-// app.use(cors(corsOptions));
-// app.use(express.json);
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+const router = require('./routes/graduateRouter')
+
+const path = require('path');
+
+app.use(express.json());
+
+
+// add graduate api
+app.use('/api/graduates', router)
+
 
 app.use('/uploads',express.static(path.join(__dirname,'uploads')));
 app.use('/documents',express.static(path.join(__dirname,'documents')));
 
+// post graduates apis
 app.use('/api/post-graduate/',postGraduateRouter);
+
+// papers print apis
 app.use('/api/print/',printRouter);
 
 
