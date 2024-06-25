@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
+        name:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         Studies: {
             type: DataTypes.STRING,
             allowNull: false
@@ -41,7 +45,28 @@ module.exports = (sequelize, DataTypes) => {
         },
         personalPhoto: {
             type: DataTypes.STRING,
-            allowNull: true
+            allowNull: false
         },
+        phone:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        email:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        program:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        nationalID:{
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        nationality:{
+            type:DataTypes.STRING,
+            allowNull: false
+        }
+
     });
 }

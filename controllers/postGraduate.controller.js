@@ -15,10 +15,10 @@ const unlinkAsync = util.promisify(fs.unlink);
 //get all requests
 const getPostGraduateAllRequest =asyncWrapper(
     async (req,res)=>{
-    const query = req.query
+    const query = req.query;
     const limit = query.limit || 10;
     const page = query.page || 1;
-    const skip = (page - 1) * limit
+    const skip = (page - 1) * limit;
     const requests = await db.postgraduateStudies.findAll();
     res.json({"status":httpStatusText.SUCCESS,
             "data":{"requests":requests}
@@ -64,6 +64,7 @@ const ApplyPostGrad = asyncWrapper(async (req, res) => {
                 postData[field] = String(req.files[field][0]['path']);
             }
         }
+        postData['Status'] = 'pending';
         console.log(postData);
         //Save the request to the database
         const newPostReq =  db.postgraduateStudies.build(postData);
