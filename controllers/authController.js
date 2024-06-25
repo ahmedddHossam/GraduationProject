@@ -59,7 +59,6 @@ const signUp = asyncWrapper(async (req,res,next)=>{
     // {
     //
     // }
-    return res.status(201).json({status:httpStatus.SUCCESS,data:{message : "Account created successfully"}});
 });
 
 const logIn = asyncWrapper(async (req,res,next)=>{

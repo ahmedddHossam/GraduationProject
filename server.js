@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const postGraduateRouter = require('./routes/postGraduate.routes');
 const userRouter = require('./routes/userRoute');
+const CareerRouter = require('./routes/CareerTrackerRouter');
 const jobRouter = require('./routes/jobRoute');
 const app = express();
 const http = require('http');
@@ -47,6 +48,8 @@ app.use('/api/post-graduate/',postGraduateRouter);
 app.use('/api/user',userRouter);
 
 app.use('/api/job',jobRouter);
+
+app.use('/api/skills/',CareerRouter)
 
 io.on('connection', (socket) => {
     console.log('Client connected');
