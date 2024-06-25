@@ -6,7 +6,7 @@ const xlsx = require('xlsx');
 const fs = require('fs');
 
 
-const app = express();
+
 
 const postGraduateRouter = require('./routes/postGraduate.routes');
 const printRouter = require('./routes/prints.routes');
@@ -29,7 +29,7 @@ const path = require('path');
 
 app.use(express.json());
 
-
+// /api/graduates/nominateTA/:Department
 // add graduate api
 app.use('/api/graduates', router)
 app.use('/api/graduates', router2)
