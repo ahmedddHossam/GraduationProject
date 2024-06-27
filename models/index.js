@@ -11,10 +11,33 @@ const sequelize = new Sequelize(dbconfig.DB, dbconfig.USER, dbconfig.PASSWORD, {
         idle: 10000
     }
 });
+async function removeIndexes() {
+    try {
+        // Fetch all indexes from the table 'work_ins'
+        const indexes = await sequelize.queryInterface.showIndex('work_ins');
+
+        // Loop through the indexes and remove those that are not on (graduateId, companyId, Position)
+        for (const index of indexes) {
+            if (!(
+                index.fields.includes('graduateId') &&
+                index.fields.includes('companyId') &&
+                index.fields.includes('Position') &&
+                index.unique === true
+            )) {
+                await sequelize.queryInterface.removeIndex('work_ins', index.name);
+                console.log(`Removed index: ${index.name}`);
+            }
+        }
+        console.log('Index cleanup completed.');
+    } catch (error) {
+        console.error('Error while removing indexes:', error);
+    }
+}
 
 sequelize.authenticate()
     .then(() => {
         console.log('Connection has been established successfully.');
+        removeIndexes().then(() => {})
     })
     .catch((err) => {
         console.error('Unable to connect to the database:', err);
@@ -56,8 +79,8 @@ db.superAdmin.belongsTo(db.user)
 db.graduate.belongsTo(db.department)
 
 //relationship between graduates and companies
-db.graduate.belongsToMany(db.company, { through: db.work_in })
-db.company.belongsToMany(db.graduate, { through: db.work_in })
+db.graduate.belongsToMany(db.company, { through: db.work_in ,foreignKey: 'graduateId', otherKey: 'companyId' })
+db.company.belongsToMany(db.graduate, { through: db.work_in, foreignKey: 'companyId', otherKey: 'graduateId'  })
 
 db.postgraduateStudies.belongsTo(db.graduate)
 
@@ -85,7 +108,6 @@ db.request.belongsTo(db.graduate)
 
 db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
 db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
-
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')

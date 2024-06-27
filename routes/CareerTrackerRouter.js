@@ -6,8 +6,13 @@ const allowedTo = require("../middleware/allowedTo");
 
 const router = express.Router()
 
-router.route('/')
+router.route('/addSkills')
     .post(TokenManipulation.verifyToken,allowedTo(['Graduate']),careerController.addSkills)
-router.route('/:graduateId')
+router.route('/skills/:graduateId')
     .get(TokenManipulation.verifyToken,allowedTo(["Graduate","Admin"]),careerController.getSkills)
+router.route('/updatePosition')
+    .post(TokenManipulation.verifyToken,allowedTo(['Graduate']),careerController.updatePosition)
+router.route('/getPositions/:graduateId')
+    .get(TokenManipulation.verifyToken,allowedTo(["Graduate","Admin"]),careerController.getPositions)
+
 module.exports = router

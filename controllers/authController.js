@@ -47,9 +47,9 @@ const signUp = asyncWrapper(async (req,res,next)=>{
         const error = appError.create('email already exist',400,httpStatus.FAIL);
         return next(error);
     }
-    // console.log('1')
+    console.log('1')
     const  newUser = await addUser(UserName,email,password,role)
-    // console.log('2')
+    console.log('2')
     if(role === 'Admin')
     {
         await addAdmin(newUser.id)
@@ -59,6 +59,8 @@ const signUp = asyncWrapper(async (req,res,next)=>{
     // {
     //
     // }
+    return res.status(200).json({status:httpStatus.SUCCESS, message: "Signed up successfully"});
+
 });
 
 const logIn = asyncWrapper(async (req,res,next)=>{

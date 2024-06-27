@@ -49,7 +49,7 @@ app.use('/api/user',userRouter);
 
 app.use('/api/job',jobRouter);
 
-app.use('/api/skills/',CareerRouter)
+app.use('/api/career/',CareerRouter)
 
 io.on('connection', (socket) => {
     console.log('Client connected');

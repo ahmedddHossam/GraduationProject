@@ -26,7 +26,7 @@ const publish = asyncWrapper(async (req, res, next)=>{
 
     try{
         // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        console.log(req.currentUser)
+        // console.log(req.currentUser)
         const newJob = new db.job({
             Title: Title,
             Description: Description,
@@ -44,9 +44,17 @@ const publish = asyncWrapper(async (req, res, next)=>{
     }
 })
 
-const getJobNotificationsForGraduate=asyncWrapper(async (req, res,next) => {
+const getJobNotificationsForGraduate = asyncWrapper(async (req, res, next) => {
+    const graduateId = req.params.graduateId;
 
-    const graduateId = req.params
+    if (!graduateId) {
+        const error = appError.create('graduate id is required', 400, httpStatus.FAIL);
+        return next(error);
+    }
+
+    // Extract limit and offset from query parameters, with default values
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
 
     try {
         const graduate = await db.graduate.findByPk(graduateId);
@@ -56,13 +64,18 @@ const getJobNotificationsForGraduate=asyncWrapper(async (req, res,next) => {
             return next(error);
         }
 
-        // Retrieve job notifications for the graduate from the database
-        const notifications = await db.jobPublishNotification.findAll({where: {GraduateId:graduateId}});
-        return res.json(notifications);
-    }
-    catch (error) {
+        // Retrieve job notifications for the graduate from the database with pagination
+        const notifications = await db.jobPublishNotification.findAll({
+            where: { GraduateId: graduateId },
+            limit: limit,
+            offset: offset
+        });
+
+        return res.status(200).json({ status: httpStatus.SUCCESS, data: notifications });
+    } catch (error) {
         console.error('Error retrieving job notifications:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(err);
     }
 });
 
@@ -111,12 +124,21 @@ const apply = asyncWrapper(async (req,res,next)=>{
         GraduateId: graduate.GraduateId,
         JobId: jobId,
     });
+
+    const io = initializeSocket.getSocketServer();
+    io.emit('apply for job',JSON.stringify(application));
+
+
     return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "applied successfully"}});
 })
 
-const getApplicationsForGraduate=asyncWrapper(async (req,res,next)=>
-{
+const getApplicationsForGraduate = asyncWrapper(async (req, res, next) => {
     const { graduateId } = req.params;
+
+    if (!graduateId) {
+        const error = appError.create('graduate id is required', 400, httpStatus.FAIL);
+        return next(error);
+    }
 
     const graduate = await db.graduate.findByPk(graduateId);
 
@@ -125,27 +147,52 @@ const getApplicationsForGraduate=asyncWrapper(async (req,res,next)=>
         return next(error);
     }
 
-    const Applications = await db.application.findAll({
-        where: { GraduateId: graduateId },
-        include: [db.job] // Include the job details
-    });
+    // Extract limit and offset from query parameters, with default values
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
 
-    return res.status(200).json({
-        status: httpStatus.SUCCESS,
-        data: Applications
-    });
-});
-const getApplications=asyncWrapper(async (req,res,next)=>
-{
+    try {
+        const applications = await db.application.findAll({
+            where: { GraduateId: graduateId },
+            include: [db.job], // Include the job details
+            limit: limit,
+            offset: offset
+        });
 
-    const Applications = await db.application.findAll({
-        include: [db.job] // Include the job details
-    });
-    return res.status(200).json({
-        status: httpStatus.SUCCESS,
-        data: Applications
-    });
+        return res.status(200).json({
+            status: httpStatus.SUCCESS,
+            data: applications
+        });
+    } catch (error) {
+        console.error('Error retrieving applications:', error);
+        const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(err);
+    }
 });
+
+const getApplications = asyncWrapper(async (req, res, next) => {
+    // Extract limit and offset from query parameters, with default values
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    try {
+        const applications = await db.application.findAll({
+            include: [db.job], // Include the job details
+            limit: limit,
+            offset: offset
+        });
+
+        return res.status(200).json({
+            status: httpStatus.SUCCESS,
+            data: applications
+        });
+    } catch (error) {
+        console.error('Error retrieving applications:', error);
+        const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(err);
+    }
+});
+
 const updateApplicationStatus = asyncWrapper(async (req,res,next)=>{
     const { applicationId } = req.params;
     const { status } = req.body;
