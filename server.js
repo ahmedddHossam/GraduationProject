@@ -1,51 +1,45 @@
 const express = require('express');
 const cors = require('cors');
-
 const multer = require('multer');
 const xlsx = require('xlsx');
 const fs = require('fs');
+const socketIo = require('socket.io');
+const http = require('http');
 
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
 
-const postGraduateRouter = require('./routes/postGraduate.routes');
-const printRouter = require('./routes/prints.routes');
-const app = express();
-app.use(cors({
-    origin: 'http://localhost:3000', // your frontend URL
-    methods: 'GET,POST,PUT,DELETE,PATCH',
-    allowedHeaders: 'Content-Type,Authorization'
-}));
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.set('io', io);
 const upload = multer({ dest: 'uploads/' });
-const router = require('./routes/graduateRouter')
-const router2 = require('./routes/adminRouter')
+const graduateRouter = require('./routes/graduateRouter')
+const adminRouter = require('./routes/adminRouter')
+const requestRouter = require('./routes/requestRouter')
 
+// var corsOptions = {
+//     origin: 'http://localhost:8081'
+// }
 
-const path = require('path');
-
-
-app.use(express.json());
+// app.use(cors(corsOptions));
+// app.use(express.json);
+// app.use(express.urlencoded({ extended: true }));
 
 
 // add graduate api
-app.use('/api/graduates', router)
-app.use('/api/graduates', router2)
+
+app.use('/api/graduates', graduateRouter)
+app.use('/api/graduates', adminRouter)
+app.use('/api/graduates', requestRouter)
 
 
 
-app.use('/uploads',express.static(path.join(__dirname,'uploads')));
-app.use('/documents',express.static(path.join(__dirname,'documents')));
-
-// post graduates apis
-app.use('/api/post-graduate/',postGraduateRouter);
-
-// papers print apis
-app.use('/api/print/',printRouter);
-
-
+app.get('/', (req, res) => {
+    return res.send('AhmedHossam');
+});
 
 const PORT = process.env.PORT || 5000
 app.on('error', (error) => {
