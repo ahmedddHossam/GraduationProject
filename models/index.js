@@ -25,8 +25,6 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
 
-db.graduates = require('./graduateModel.js')(sequelize, DataTypes)
-
 db.user = require('./userModel.js')(sequelize, DataTypes)
 db.admin = require('./adminModel.js')(sequelize, DataTypes)
 db.superAdmin = require('./superAdminModel.js')(sequelize, DataTypes)
@@ -43,6 +41,7 @@ db.request = require('./requestModel.js')(sequelize, DataTypes)
 db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
+
 
 db.sequelize.sync({ force: false })
     .then(() => {
@@ -83,4 +82,3 @@ db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
 db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
 
 module.exports = db;
-

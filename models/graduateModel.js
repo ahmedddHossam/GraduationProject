@@ -5,7 +5,6 @@ module.exports = (Sequelize, DataTypes) => {
         GraduateId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
         },
         Name: {
             type: DataTypes.STRING,
