@@ -1,9 +1,12 @@
 const db = require('../models');
-const { Op, literal } = require('sequelize');
+const { Op, literal, DATE } = require('sequelize');
 const Joi = require('joi');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const Graduate = db.graduate;
+const Request = db.request;
+const { sendmail } = require('../utils/mailer');
+const { timeStamp } = require('console');
 
 const graduateSchema = Joi.object({
     GraduateId: Joi.number().required(),
@@ -186,6 +189,7 @@ const deleteGraduate = async (req, res) => {
         res.status(500).send('Internal server error');
     }
 }
+
 
 module.exports = {
     addGraduate,
