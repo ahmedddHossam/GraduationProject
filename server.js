@@ -7,9 +7,11 @@ const socketIo = require('socket.io');
 const http = require('http');
 
 
+
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
 
 
 app.use(express.json())
@@ -28,7 +30,7 @@ const requestRouter = require('./routes/requestRouter')
 // app.use(express.json);
 // app.use(express.urlencoded({ extended: true }));
 
-
+// /api/graduates/nominateTA/:Department
 // add graduate api
 
 app.use('/api/graduates', graduateRouter)
