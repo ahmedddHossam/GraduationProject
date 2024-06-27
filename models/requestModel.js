@@ -15,6 +15,10 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        userEmail: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         Timestamp: {
             type: DataTypes.DATE,
             allowNull: false

@@ -1,15 +1,11 @@
 const { Sequelize, DataTypes } = require("sequelize");
 
-module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("PostgraduateStudies", {
+module.exports = (Sequelize, DataTypes) => {
+    const PostgraduateStudies = Sequelize.define("PostgraduateStudies" , {
         applicationId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
-        },
-        name:{
-            type: DataTypes.STRING,
-            allowNull: false
         },
         Studies: {
             type: DataTypes.STRING,
@@ -47,26 +43,44 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        phone:{
+        militaryCertificate: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        email:{
+        officersApproval: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        program:{
+        Passport: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        nationalID:{
+        dataForm: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        nationality:{
-            type:DataTypes.STRING,
+        informationForm: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        diplomaCertificate: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        candidacyLetter: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        adisCertificate: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        Timestamp: {
+            type: DataTypes.DATE,
             allowNull: false
         }
+        
+    })
 
-    });
+    return PostgraduateStudies;
 }
