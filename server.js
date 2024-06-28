@@ -1,5 +1,8 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
+
 const multer = require('multer');
 const socketIo = require('socket.io');
 const http = require('http');
@@ -22,6 +25,14 @@ app.use(express.urlencoded({ extended: true }));
 app.set('io', io);
 
 const upload = multer({ dest: 'uploads/' });
+const userRouter = require('./routes/userRoute');
+const CareerRouter = require('./routes/CareerTrackerRouter');
+const jobRouter = require('./routes/jobRoute');
+const initializeSocket = require('./config/socketConfig');
+const path = require('path');
+const db = require("./models/index.js");
+const httpStatus = require('./utils/httpStatusText');
+
 
 const graduateRouter = require('./routes/graduateRouter');
 const adminRouter = require('./routes/adminRouter');
@@ -42,6 +53,16 @@ app.use('/api/admin', adminRouter); // Adjusted the base path for adminRouter
 app.use('/api/requests', requestRouter); // Adjusted the base path for requestRouter
 app.use('/api/post-graduate', postGraduateRouter); // Adjusted the base path for requestRouter
 app.use('/api/print', printRouter); // Adjusted the base path for requestRouter
+app.use('/api/user',userRouter);
+app.use('/api/job',jobRouter);
+app.use('/api/career/',CareerRouter)
+
+app.all('*', (req, res, next) => {
+    return res.status(404).json({ status: httpStatus.ERROR, message: "Page not found" })
+});
+app.use((err, req, res, next) => {
+    return res.status(err.statusCode || 500).json({ status: err.statusText || httpStatus.ERROR, message: err.message });
+});Q
 
 const PORT = process.env.PORT || 5000;
 
