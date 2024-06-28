@@ -48,8 +48,6 @@ const db = {}
 db.Sequelize = Sequelize
 db.sequelize = sequelize
 
-db.graduates = require('./graduateModel.js')(sequelize, DataTypes)
-
 db.user = require('./userModel.js')(sequelize, DataTypes)
 db.admin = require('./adminModel.js')(sequelize, DataTypes)
 db.superAdmin = require('./superAdminModel.js')(sequelize, DataTypes)
@@ -66,9 +64,18 @@ db.request = require('./requestModel.js')(sequelize, DataTypes)
 db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
+
+
+
+db.sequelize.sync({ force: false })
+    .then(() => {
+        console.log('yes re-sync done!')
+    })
+
 db.jobPublishNotification = require('./JobPublishNotification')(sequelize, DataTypes)
 db.skill = require('./skillModel')(sequelize, DataTypes)
 db.graduateSkill = require('./GraduateSkillModel')(sequelize, DataTypes)
+
 
 // relationships graduate,admin,superAdmin is a user
 db.graduate.belongsTo(db.user)
@@ -114,4 +121,3 @@ db.sequelize.sync({ force: false })
     })
 
 module.exports = db;
-
