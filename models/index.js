@@ -11,33 +11,10 @@ const sequelize = new Sequelize(dbconfig.DB, dbconfig.USER, dbconfig.PASSWORD, {
         idle: 10000
     }
 });
-async function removeIndexes() {
-    try {
-        // Fetch all indexes from the table 'work_ins'
-        const indexes = await sequelize.queryInterface.showIndex('work_ins');
-
-        // Loop through the indexes and remove those that are not on (graduateId, companyId, Position)
-        for (const index of indexes) {
-            if (!(
-                index.fields.includes('graduateId') &&
-                index.fields.includes('companyId') &&
-                index.fields.includes('Position') &&
-                index.unique === true
-            )) {
-                await sequelize.queryInterface.removeIndex('work_ins', index.name);
-                console.log(`Removed index: ${index.name}`);
-            }
-        }
-        console.log('Index cleanup completed.');
-    } catch (error) {
-        console.error('Error while removing indexes:', error);
-    }
-}
 
 sequelize.authenticate()
     .then(() => {
         console.log('Connection has been established successfully.');
-        removeIndexes().then(() => {})
     })
     .catch((err) => {
         console.error('Unable to connect to the database:', err);

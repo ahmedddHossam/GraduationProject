@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/CVs');
     },
     filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
+        cb(null, `${file.originalname}`);
     },
 });
 
@@ -47,7 +47,7 @@ route.route('/getAllApplications/:jobId').
 get(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.getApplications);
 
 route.route('/getAllJobs').
-get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getJobs);
+get(TokenManipulation.verifyToken,allowedTo(["Admin","Graduate"]),jobController.getJobs);
 
 route.route('/updateApplicationStatus/:applicationId')
     .patch(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.updateApplicationStatus);

@@ -109,9 +109,11 @@ async function Notify(newJob)
 
 
 const apply = asyncWrapper(async (req,res,next)=>{
-    const { userEmail } = req.currentUser.email ; // solve it with hoss
+
+    const userEmail  = req.currentUser.email ; // solve it with hoss
     const { jobId } = req.params;
 
+    console.log(userEmail,jobId)
     const graduate = await db.graduate.findOne({where:{Email:userEmail }});
 
     const job = db.job.findByPk(jobId);
@@ -124,18 +126,30 @@ const apply = asyncWrapper(async (req,res,next)=>{
         const error = appError.create('job not found',404,httpStatus.FAIL);
         return next(error);
     }
-    const application = await db.application.create({
-        status: 'Pending',
-        cvPath: req.file.path,
-        GraduateId: graduate.GraduateId,
-        JobId: jobId,
-    });
-
-    const io = initializeSocket.getSocketServer();
-    io.emit('apply for job',JSON.stringify(application));
+   try {
 
 
-    return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "applied successfully"}});
+       const application = await db.application.create({
+           status: 'Pending',
+           cvPath: req.file.path,
+           graduateGraduateId: graduate.GraduateId,
+           jobJobId: jobId,
+           TImestamp: Date.now()
+
+       });
+
+       const io = initializeSocket.getSocketServer();
+       // io.emit('apply for job', JSON.stringify(application));
+       return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "applied successfully"}});
+
+   }
+    catch (err)
+    {
+        console.error(err);
+        const error = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(error);
+    }
+
 })
 
 const getApplicationsForGraduate = asyncWrapper(async (req, res, next) => {
@@ -198,6 +212,8 @@ const getApplications = asyncWrapper(async (req, res, next) => {
         return next(err);
     }
 });
+
+
 const getJobs = asyncWrapper(async (req, res, next) => {
     // Extract limit and offset from query parameters, with default values
     const limit = parseInt(req.query.limit) || 10;
