@@ -11,12 +11,9 @@ async function  addAdmin(userId) {
     });
     await newAdmin.save();
 }
-async function  addGraduate(userId)
+async function  addNewGraduate(userEmail, password, userName)
 {
-    // const newAdmin = db.Admin({
-    //     userId
-    // });
-    // await newAdmin.save();
+    await addUser(userName,userEmail,password,"Graduate")
 }
 
 async function  addUser(UserName,email,password,role)
@@ -112,5 +109,5 @@ module.exports = {
     logIn,
     logOut,
     signUp,
-    addGraduate
+    addNewGraduate
 }
