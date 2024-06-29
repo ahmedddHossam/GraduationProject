@@ -7,7 +7,7 @@ const Graduate = db.graduate;
 const Request = db.request;
 const { sendmail } = require('../utils/mailer');
 const { timeStamp } = require('console');
-
+const {addNewGraduate} = require('./authController');
 const graduateSchema = Joi.object({
     GraduateId: Joi.number().required(),
     Name: Joi.string().required(),
@@ -35,7 +35,8 @@ const addGraduate = async (req, res) => {
             return res.status(400).send(error.details[0].message);
         }
 
-        let newGraduate = await Graduate.create(value);
+        const newGraduate = await Graduate.create(value);
+        addNewGraduate(newGraduate.Email,newGraduate.NationalId,newGraduate.Name);
         res.status(200).send(newGraduate);
         console.log(newGraduate);
     } catch (error) {

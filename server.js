@@ -30,7 +30,6 @@ const CareerRouter = require('./routes/CareerTrackerRouter');
 const jobRouter = require('./routes/jobRoute');
 const initializeSocket = require('./config/socketConfig');
 const path = require('path');
-const db = require("./models/index.js");
 const httpStatus = require('./utils/httpStatusText');
 
 
@@ -62,7 +61,7 @@ app.all('*', (req, res, next) => {
 });
 app.use((err, req, res, next) => {
     return res.status(err.statusCode || 500).json({ status: err.statusText || httpStatus.ERROR, message: err.message });
-});Q
+});
 
 const PORT = process.env.PORT || 5000;
 
