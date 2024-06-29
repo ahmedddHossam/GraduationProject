@@ -1,6 +1,7 @@
 const db = require('../models');
 const Graduate = db.graduate;
 const { Sequelize, Op } = require("sequelize");
+const httpStatusText = require('../utils/httpStatusText')
 
 // Nominate TA API
 const nominateTA = async (req, res) => {
@@ -25,7 +26,9 @@ const nominateTA = async (req, res) => {
             limit: 15
         });
 
-        res.status(200).json(graduates);
+        res.json({"status":httpStatusText.SUCCESS,
+            "data": {"graduate": graduates}
+        })
     } catch (error) {
         res.status(500).json({ message: 'An error occurred', error: error.message });
     }

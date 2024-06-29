@@ -1,3 +1,4 @@
+const { allow } = require("joi");
 const { Sequelize, DataTypes } = require("sequelize");
 
 module.exports = (Sequelize, DataTypes) => {
@@ -8,6 +9,26 @@ module.exports = (Sequelize, DataTypes) => {
             autoIncrement: true
         },
         courseName: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        degree: {
+            type: DataTypes.INTEGER,
+            allowNull: false 
+        },
+        grade: {
+            type: DataTypes.STRING,
+            allowNull: false 
+        },
+        semester: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        year: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        bylaw: {
             type: DataTypes.STRING,
             allowNull: false
         }
