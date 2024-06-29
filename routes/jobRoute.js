@@ -32,21 +32,24 @@ const upload = multer({
 });
 
 route.route('/Publish')
-    .post(TokenManipulation.verifyToken,allowedTo("Admin"),jobController.publish)
+    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.publish)
 
 route.route('/getNew/:graduateId')
-    .get(TokenManipulation.verifyToken,allowedTo("Graduate"),jobController.getJobNotificationsForGraduate);
+    .get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getJobNotificationsForGraduate);
 
 route.route('/apply/:jobId').
-post(TokenManipulation.verifyToken,allowedTo("Graduate"),upload.single('cv'),jobController.apply);
+post(TokenManipulation.verifyToken,allowedTo(["Graduate"]),upload.single('cv'),jobController.apply);
 
 route.route('/getApplicationsForGraduate/:graduateId').
-get(TokenManipulation.verifyToken,allowedTo("Graduate"),jobController.getApplicationsForGraduate)
+get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getApplicationsForGraduate)
 
 route.route('/getAllApplications/:jobId').
-get(TokenManipulation.verifyToken,allowedTo("Admin"),jobController.getApplications);
+get(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.getApplications);
+
+route.route('/getAllJobs').
+get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getJobs);
 
 route.route('/updateApplicationStatus/:applicationId')
-    .patch(TokenManipulation.verifyToken,allowedTo("Admin"),jobController.updateApplicationStatus);
+    .patch(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.updateApplicationStatus);
 
 module.exports=route;

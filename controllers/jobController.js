@@ -9,6 +9,7 @@ const transporter = require('../config/emailConfig');
 const publish = asyncWrapper(async (req, res, next)=>{
     const {Title, Description, Requirements} = req.body;
 
+    console.log(Title, Description, Requirements)
     if(!Title){
         const error = appError.create('Title is required',400,httpStatus.FAIL);
         return next(error);
@@ -26,20 +27,25 @@ const publish = asyncWrapper(async (req, res, next)=>{
 
     try{
         // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        // console.log(req.currentUser)
+        console.log(req.currentUser)
+        const admin = await db.admin.findOne({where:{userUserId:req.currentUser.id}});
         const newJob = new db.job({
             Title: Title,
             Description: Description,
             Requirements: Requirements,
-            adminAdminId: req.currentUser.id
+            adminAdminId: admin.AdminId
         });
+        console.log(1)
         await newJob.save();
+        console.log(2)
         await Notify(newJob);
+
         return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "Job Published successfully"}});
     }
     catch (err)
     {
         // console.error('Error publishing job:', err);
+        console.log(err)
         res.status(500).json({ error: 'Internal server error' });
     }
 })
@@ -88,8 +94,8 @@ async function Notify(newJob)
             // console.log(graduate)
             // Store the job notification in the database for each graduate
             const newNotification = await new db.jobPublishNotification({
-                GraduateId:graduate.GraduateId,
-                JobId:newJob.id
+                graduateGraduateId:graduate.GraduateId,
+                jobJobId:newJob.JobId
             });
             await newNotification.save();
 
@@ -192,6 +198,27 @@ const getApplications = asyncWrapper(async (req, res, next) => {
         return next(err);
     }
 });
+const getJobs = asyncWrapper(async (req, res, next) => {
+    // Extract limit and offset from query parameters, with default values
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    try {
+        const jobs = await db.job.findAll({
+            limit: limit,
+            offset: offset
+        });
+
+        return res.status(200).json({
+            status: httpStatus.SUCCESS,
+            data: jobs
+        });
+    } catch (error) {
+        console.error('Error retrieving applications:', error);
+        const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(err);
+    }
+});
 
 const updateApplicationStatus = asyncWrapper(async (req,res,next)=>{
     const { applicationId } = req.params;
@@ -234,10 +261,13 @@ const updateApplicationStatus = asyncWrapper(async (req,res,next)=>{
     });
 
 });
+
+
 module.exports = {
     getJobNotificationsForGraduate,
     publish,
     apply,
+    getJobs,
     getApplicationsForGraduate,
     getApplications,
     updateApplicationStatus

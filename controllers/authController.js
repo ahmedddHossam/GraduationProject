@@ -7,8 +7,9 @@ const TokenManipulation = require('../utils/TokenManipulation');
 const {getDecoded} = require("../utils/TokenManipulation");
 async function  addAdmin(userId) {
     const newAdmin = await new db.admin({
-        userId
+        userUserId:userId
     });
+    console.log(newAdmin)
     await newAdmin.save();
 }
 async function  addNewGraduate(userEmail, password, userName)
@@ -44,21 +45,24 @@ const signUp = asyncWrapper(async (req,res,next)=>{
         const error = appError.create('email already exist',400,httpStatus.FAIL);
         return next(error);
     }
-    console.log('1')
-    const  newUser = await addUser(UserName,email,password,role)
-    console.log('2')
-    if(role === 'Admin')
-    {
-        await addAdmin(newUser.id)
-    }
-    // console.log('3')
-    // else
-    // {
-    //
-    // }
-    return res.status(200).json({status:httpStatus.SUCCESS, message: "Signed up successfully"});
+    try {
+        console.log('1')
+        const newUser = await addUser(UserName, email, password, role);
+        console.log(newUser)
+        if (role === 'Admin') {
+            await addAdmin(newUser.UserId)
+        }
+        // console.log('3')
+        // else
+        // {
+        //
+        // }}
+        return res.status(200).json({status: httpStatus.SUCCESS, message: "Signed up successfully"});
 
-});
+    }catch (err){
+        console.log(err)}
+    }
+);
 
 const logIn = asyncWrapper(async (req,res,next)=>{
     const {email, password}=req.body;
