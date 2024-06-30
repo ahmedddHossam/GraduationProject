@@ -56,10 +56,6 @@ const getSkills = asyncWrapper(async (req, res, next) => {
         return next(error);
     }
 
-    // Extract limit and offset from query parameters, with default values
-    const limit = parseInt(req.query.limit) || 10;
-    const offset = parseInt(req.query.offset) || 0;
-
     try {
         let allSkills = await db.graduate.findByPk(graduateId, {
             include: {
@@ -69,8 +65,7 @@ const getSkills = asyncWrapper(async (req, res, next) => {
                     attributes: []
                 }
             },
-            limit: limit,
-            offset: offset
+
         });
 
         if (!allSkills) {
@@ -175,8 +170,6 @@ const getPositions = asyncWrapper(async (req, res, next) => {
                     attributes: ['Position', 'startDate', 'endDate']
                 }
             },
-            limit: limit,
-            offset: offset
         });
 
         if (!allPositions) {

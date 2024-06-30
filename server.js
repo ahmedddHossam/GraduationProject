@@ -28,6 +28,7 @@ const upload = multer({ dest: 'uploads/' });
 const userRouter = require('./routes/userRoute');
 const CareerRouter = require('./routes/CareerTrackerRouter');
 const jobRouter = require('./routes/jobRoute');
+const profileRouter = require('./routes/profileRouter')
 const initializeSocket = require('./config/socketConfig');
 const path = require('path');
 const httpStatus = require('./utils/httpStatusText');
@@ -55,7 +56,7 @@ app.use('/api/print', printRouter); // Adjusted the base path for requestRouter
 app.use('/api/user',userRouter);
 app.use('/api/job',jobRouter);
 app.use('/api/career/',CareerRouter)
-
+app.use('/api/profile',profileRouter)
 app.all('*', (req, res, next) => {
     return res.status(404).json({ status: httpStatus.ERROR, message: "Page not found" })
 });
