@@ -35,10 +35,11 @@ const publish = asyncWrapper(async (req, res, next)=>{
             Requirements: Requirements,
             adminAdminId: admin.AdminId
         });
+        const io = req.app.get('io');
         console.log(1)
         await newJob.save();
-        console.log(2)
-        await Notify(newJob);
+        console.log(2);
+        await Notify(newJob,io);
 
         return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "Job Published successfully"}});
     }
@@ -85,9 +86,8 @@ const getJobNotificationsForGraduate = asyncWrapper(async (req, res, next) => {
     }
 });
 
-async function Notify(newJob)
+async function Notify(newJob,io)
 {
-    const io = initializeSocket.getSocketServer();
     try {
         const graduates = await db.graduate.findAll();
         for (const graduate of graduates) {
@@ -100,7 +100,7 @@ async function Notify(newJob)
             await newNotification.save();
 
         }
-        io.emit('newJob',JSON.stringify(newJob));
+        io.emit('newJob',newJob);
     }
     catch (error) {
         console.error('Error notifying graduates about new job:', error);
