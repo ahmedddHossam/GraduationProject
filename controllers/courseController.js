@@ -35,21 +35,21 @@ const getCourses = async (req, res) => {
         if (year <= 2008 ) {
             courses = await Course.findAll({
                 where: {
-                    bylaw: "old"
+                    bylaw: "Old"
                 }
             })
         }
         else {
             courses = await Course.findAll({
                 where: {
-                    bylaw: "new"
+                    bylaw: "New"
                 }
             })
         }
 
         res.json({
             "status": httpStatusText.SUCCESS,
-            "data": { "Courses": courses }
+            "data": { "course": courses }
             })
     }
     catch {

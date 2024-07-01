@@ -1,11 +1,14 @@
 const db = require('../models');
-const { Op, literal, DATE } = require('sequelize');
+const { Op, literal, DATE, where } = require('sequelize');
 const Joi = require('joi');
 const xlsx = require('xlsx');
 const fs = require('fs');
 const httpStatusText = require('../utils/httpStatusText');
 const { log } = require('console');
-const Graduate = db.graduate;
+// const Graduate = db.graduate;
+// const Course = db.courses
+// const enrolled = db.enrolled_in
+// const { Graduate, Course, Enrolled_in } = db;
 
 const graduateSchema = Joi.object({
     GraduateId: Joi.number().required(),
@@ -27,6 +30,10 @@ const graduateSchema = Joi.object({
 
 // national id validation
 function validateNationalID(nationalID, birthdate) {
+    if (!(birthdate instanceof Date)) {
+        birthdate = new Date(birthdate);
+    }
+
     const century = nationalID.charAt(0) === '3' ? '20' : '19';
     // Check if the National ID is 14 digits long
     if (!/^\d{14}$/.test(nationalID)) {
@@ -36,10 +43,6 @@ function validateNationalID(nationalID, birthdate) {
     const year = century + nationalID.slice(1, 3);
     const month = nationalID.slice(3, 5);
     const day = nationalID.slice(5, 7);
-
-    console.log(year)
-    console.log(month)
-    console.log(day)
 
     const extractedDate = new Date(`${year}-${month}-${day}`);
     console.log(extractedDate.toISOString().split('T')[0])
@@ -51,32 +54,66 @@ function validateNationalID(nationalID, birthdate) {
 // add one graduate
 const addGraduate = async (req, res) => {
     try {
-        const { error, value } = graduateSchema.validate(req.body);
-        if (error) {
-            return res.status(400).send(error.details[0].message);
-        }
+        const { Graduate, Courses } = req.body; 
 
-        if (!validateNationalID(value.NationalId, value.BirthDate)) {
+        console.log(Graduate); 
+        console.log(Courses);
+
+        // Validate National ID and Birth Date
+        if (!validateNationalID(Graduate.NationalId, Graduate.BirthDate)) {
             return res.status(400).send('National ID does not match the provided birthdate');
         }
-        console.log("birth",value.BirthDate)
 
-        if (!/^\d{11}$/.test(value.MobileNumber)) {
-            return res.status(400).send('mobile number must be of 11 numbers')
+        // Validate Mobile Number format
+        if (!/^\d{11}$/.test(Graduate.MobileNumber)) {
+            return res.status(400).send('Mobile number must be 11 digits');
         }
 
-        let newGraduate = await Graduate.create(value);
+        let newGraduate = await db.graduate.create(Graduate);
+        let coursesList = [];
+
+        // Enroll in courses
+        if (Courses && Array.isArray(Courses)) {
+            await Promise.all(Courses.map(async (course) => {
+                try {
+                    // Find the course by courseId
+                    let enrolledCourse = await db.course.findByPk(course.courseId);
+                    if (enrolledCourse) {
+                        await db.enrolled_in.create({
+                            GraduateId: newGraduate.GraduateId, 
+                            courseId: course.courseId,
+                            Grade: course.Grade, 
+                            Term: course.Term, 
+                            Year: course.Year,
+                            Result: course.Result,
+                            termWork: course.termWork, 
+                            examWork: course.examWork,
+                            Level: course.Level,
+                            creditHours: course.creditHours
+                        });
+                    }
+                    coursesList.push(enrolledCourse)
+                } catch (error) {
+                    console.error('Error enrolling in course:', error);
+                }
+            }));
+        }
 
         res.json({
-            "status": httpStatusText.SUCCESS,
-            "data": { "graduate": newGraduate }
-        })
-
+            "status": "success",
+            "data": { "graduate": newGraduate ,
+                "Courses": coursesList
+            }
+        });
     } catch (error) {
         console.error('Error adding graduate:', error);
         res.status(500).send('Internal server error');
     }
-}
+};
+
+
+
+
 
 // add excel file of graduates
 const addGraduatesFromFile = async (req, res) => {
@@ -146,16 +183,34 @@ const addGraduatesFromFile = async (req, res) => {
 const getOneGraduate = async (req, res) => {
     try {
         let id = req.params.GraduateId;
-        let graduate = await Graduate.findOne({ where: { GraduateId: id } });
+        let allCourses = await db.graduate.findByPk(id, {
+            include: [{
+                model: db.course,
+                attributes: ['courseName', 'courseId', 'year', 'grade'],
+                through: {
+                    attributes: ['creditHours', 'Term', 'Level', 'Result'],
+                }
+            }]
+        });
+
+        if (!allCourses) {
+            return res.status(404).json({
+                "status": "failure",
+                "message": "Graduate not found"
+            });
+        }
+
         res.json({
-            "status": httpStatusText.SUCCESS,
-            "data": { "graduate": graduate }
-        })
+            "status": "success",
+            "data": { "graduate": allCourses }
+        });
     } catch (error) {
-        console.error('Error getting graduate:', error);
+        console.error('Error getting graduate:', error.message);
+        console.error(error.stack);
         res.status(500).send('Internal server error');
     }
-}
+};
+
 
 // get graduates of a specific year of a specific department
 const getAllGraduatesOfDepartment = async (req, res) => {
@@ -164,7 +219,7 @@ const getAllGraduatesOfDepartment = async (req, res) => {
         let year = parseInt(req.params.Year);
 
         // Extract and filter by year of EndDate using raw SQL
-        let graduates = await Graduate.findAll({
+        let graduates = await db.graduate.findAll({
             where: {
                 Department: dept,
                 [Op.and]: literal(`YEAR(EndDate) = ${year}`)
