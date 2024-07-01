@@ -9,6 +9,7 @@ const transporter = require('../config/emailConfig');
 const publish = asyncWrapper(async (req, res, next)=>{
     const {Title, Description, Requirements} = req.body;
 
+    console.log(Title, Description, Requirements)
     if(!Title){
         const error = appError.create('Title is required',400,httpStatus.FAIL);
         return next(error);
@@ -26,20 +27,25 @@ const publish = asyncWrapper(async (req, res, next)=>{
 
     try{
         // console.log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        // console.log(req.currentUser)
+        console.log(req.currentUser)
+        const admin = await db.admin.findOne({where:{userUserId:req.currentUser.id}});
         const newJob = new db.job({
             Title: Title,
             Description: Description,
             Requirements: Requirements,
-            adminAdminId: req.currentUser.id
+            adminAdminId: admin.AdminId
         });
+        console.log(1)
         await newJob.save();
+        console.log(2)
         await Notify(newJob);
+
         return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "Job Published successfully"}});
     }
     catch (err)
     {
         // console.error('Error publishing job:', err);
+        console.log(err)
         res.status(500).json({ error: 'Internal server error' });
     }
 })
@@ -88,8 +94,8 @@ async function Notify(newJob)
             // console.log(graduate)
             // Store the job notification in the database for each graduate
             const newNotification = await new db.jobPublishNotification({
-                GraduateId:graduate.GraduateId,
-                JobId:newJob.id
+                graduateGraduateId:graduate.GraduateId,
+                jobJobId:newJob.JobId
             });
             await newNotification.save();
 
@@ -103,9 +109,11 @@ async function Notify(newJob)
 
 
 const apply = asyncWrapper(async (req,res,next)=>{
-    const { userEmail } = req.currentUser.email ; // solve it with hoss
+
+    const userEmail  = req.currentUser.email ; // solve it with hoss
     const { jobId } = req.params;
 
+    console.log(userEmail,jobId)
     const graduate = await db.graduate.findOne({where:{Email:userEmail }});
 
     const job = db.job.findByPk(jobId);
@@ -118,18 +126,30 @@ const apply = asyncWrapper(async (req,res,next)=>{
         const error = appError.create('job not found',404,httpStatus.FAIL);
         return next(error);
     }
-    const application = await db.application.create({
-        status: 'Pending',
-        cvPath: req.file.path,
-        GraduateId: graduate.GraduateId,
-        JobId: jobId,
-    });
-
-    const io = initializeSocket.getSocketServer();
-    io.emit('apply for job',JSON.stringify(application));
+   try {
 
 
-    return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "applied successfully"}});
+       const application = await db.application.create({
+           status: 'Pending',
+           cvPath: req.file.path,
+           graduateGraduateId: graduate.GraduateId,
+           jobJobId: jobId,
+           TImestamp: Date.now()
+
+       });
+
+       const io = initializeSocket.getSocketServer();
+       // io.emit('apply for job', JSON.stringify(application));
+       return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "applied successfully"}});
+
+   }
+    catch (err)
+    {
+        console.error(err);
+        const error = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(error);
+    }
+
 })
 
 const getApplicationsForGraduate = asyncWrapper(async (req, res, next) => {
@@ -193,6 +213,29 @@ const getApplications = asyncWrapper(async (req, res, next) => {
     }
 });
 
+
+const getJobs = asyncWrapper(async (req, res, next) => {
+    // Extract limit and offset from query parameters, with default values
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = parseInt(req.query.offset) || 0;
+
+    try {
+        const jobs = await db.job.findAll({
+            limit: limit,
+            offset: offset
+        });
+
+        return res.status(200).json({
+            status: httpStatus.SUCCESS,
+            data: jobs
+        });
+    } catch (error) {
+        console.error('Error retrieving applications:', error);
+        const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+        return next(err);
+    }
+});
+
 const updateApplicationStatus = asyncWrapper(async (req,res,next)=>{
     const { applicationId } = req.params;
     const { status } = req.body;
@@ -234,10 +277,13 @@ const updateApplicationStatus = asyncWrapper(async (req,res,next)=>{
     });
 
 });
+
+
 module.exports = {
     getJobNotificationsForGraduate,
     publish,
     apply,
+    getJobs,
     getApplicationsForGraduate,
     getApplications,
     updateApplicationStatus
