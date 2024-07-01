@@ -6,7 +6,7 @@ const { Sequelize, Op } = require("sequelize");
 
 const manageProfile = async(req,res,next)=>{
     const grad = req.currentUser;
-    console.log(grad.email)
+    console.log(grad.email);
     const email = grad.email
     const user = await Graduate.findOne({where:{
         Email: email

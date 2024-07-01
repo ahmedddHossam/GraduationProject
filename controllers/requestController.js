@@ -39,11 +39,24 @@ const getAllRequests = async (req, res) => {
         res.status(404).json('Not Found');
     }
 }
-
+const getUserRequests =
+    async (req, res) => {
+        const grad = req.currentUser;
+        console.log(grad.email);
+        const email = grad.email;
+        const user = await db.graduate.findOne({where:{Email:email}})
+        const requests = await Request.findAll({where: {graduateID: user.GraduateId},order: [['requestId', 'DESC']]});
+        if(requests){
+            res.status(200).json(requests);
+        }else{
+            res.status(404).json('Not Found');
+        }
+    }
 
 
 module.exports = {
     sendRequest,
     getAllRequests,
+    getUserRequests
 
 }

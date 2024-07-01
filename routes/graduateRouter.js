@@ -17,11 +17,11 @@ router.post('/addGraduate',
     graduateController.addGraduate)
 
 router.get('/getGraduate/:GraduateId',
-    TokenManipulation.verifyToken,allowedTo("Admin"),
+    TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.getOneGraduate)
 
 router.get('/getAllGraduates',
-    TokenManipulation.verifyToken,allowedTo("Admin"),
+    TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.getAllGraduates)
 
 router.put('/updateGraduate/:GraduateId',
