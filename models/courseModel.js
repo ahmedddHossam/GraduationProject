@@ -12,6 +12,10 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        arabicCourseName: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         degree: {
             type: DataTypes.INTEGER,
             allowNull: false 

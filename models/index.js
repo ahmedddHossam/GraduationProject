@@ -90,8 +90,18 @@ db.response.belongsTo(db.admin)
 
 db.request.belongsTo(db.graduate)
 
-db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
-db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
+db.graduate.belongsToMany(db.course, { 
+    through: db.enrolled_in, 
+    foreignKey: 'graduateId', // foreign key in the enrolled_in table referencing graduate
+    otherKey: 'courseId' // foreign key in the enrolled_in table referencing course
+});
+
+db.course.belongsToMany(db.graduate, { 
+    through: db.enrolled_in,
+    foreignKey: 'courseId', // foreign key in the enrolled_in table referencing course
+    otherKey: 'graduateId' // foreign key in the enrolled_in table referencing graduate
+});
+
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')

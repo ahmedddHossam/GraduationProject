@@ -1,7 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
 
 module.exports = (Sequelize, DataTypes) => {
-    const Department = Sequelize.define("department" , {
+    const Department = Sequelize.define("department", {
         DepartmentId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -14,8 +14,16 @@ module.exports = (Sequelize, DataTypes) => {
             validate: {
                 notEmpty: true
             }
+        },
+        arabicDepartmentName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+            validate: {
+                notEmpty: true
+            }
         }
-        
+
     })
 
     return Department;
