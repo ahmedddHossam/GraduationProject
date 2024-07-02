@@ -39,6 +39,7 @@ const graduateRouter = require('./routes/graduateRouter');
 const adminRouter = require('./routes/adminRouter');
 const requestRouter = require('./routes/requestRouter');
 const postGraduateRouter = require('./routes/postGraduate.routes');
+const announcementRouter = require('./routes/announcementRoute');
 const printRouter = require('./routes/prints.routes')
 const courseRouter = require('./routes/courseRouter')
 const {sendMail} = require("./utils/mailer");
@@ -60,6 +61,7 @@ app.use('/api/user',userRouter);
 app.use('/api/job',jobRouter);
 app.use('/api/career/',CareerRouter)
 app.use('/api/profile',profileRouter)
+app.use('/api/announcement',announcementRouter)
 app.all('*', (req, res, next) => {
     return res.status(404).json({ status: httpStatus.ERROR, message: "Page not found" })
 });
@@ -129,6 +131,23 @@ io.on('connection', (socket) => {
 
         }
     });
+
+    socket.on('mark_newJob_notification_as_read',async (notificationId)=>{
+        try {
+            // console.log(notificationIds)
+            // Update the newRequest status in your database for notificationIds
+            const notification = await db.jobPublishNotification.findByPk(notificationId);
+                notification.IsDisplayed = true;
+                await notification.save();
+            // Emit an event to confirm to the client that notifications are marked as read
+            socket.emit('marked_newJob_notification_as_read', { success: true });
+        }
+        catch (error) {
+            console.error('Error marking notifications as read:', error);
+            // Optionally handle error and emit an error event to the client
+            socket.emit('mark_newJob_notification_as_read_error', { error: 'Failed to mark job notifications as read' });
+        }
+    })
 
     socket.on('disconnect', () => {
         console.log('Client disconnected');

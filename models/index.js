@@ -41,7 +41,7 @@ db.request = require('./requestModel.js')(sequelize, DataTypes)
 db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
-
+db.announcement= require('./announcementModel')(sequelize,DataTypes)
 
 
 db.sequelize.sync({ force: false })
@@ -73,8 +73,10 @@ db.application.belongsTo(db.job)
 
 db.job.belongsTo(db.admin)
 
-db.jobPublishNotification.belongsTo(db.graduate)
-db.jobPublishNotification.belongsTo(db.job)
+db.announcement.belongsTo(db.admin,{foreignKey:'adminId'});
+
+db.jobPublishNotification.belongsTo(db.graduate,{onDelete:'CASCADE'})
+db.jobPublishNotification.belongsTo(db.job,{onDelete:'CASCADE'})
 
 db.graduate.belongsToMany(db.skill, { through: db.graduateSkill, foreignKey: 'graduateId', otherKey: 'skillId' });
 db.skill.belongsToMany(db.graduate, { through: db.graduateSkill, foreignKey: 'skillId', otherKey: 'graduateId' });
