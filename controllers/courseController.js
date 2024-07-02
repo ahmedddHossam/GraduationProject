@@ -52,7 +52,7 @@ const getCourses = async (req, res) => {
             "data": { "course": courses }
             })
     }
-    catch {
+    catch(error){
         console.error('Error getting courses:', error);
         res.status(500).send('Internal server error');
     }

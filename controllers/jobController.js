@@ -153,14 +153,16 @@ const apply = asyncWrapper(async (req,res,next)=>{
 })
 
 const getApplicationsForGraduate = asyncWrapper(async (req, res, next) => {
-    const { graduateId } = req.params;
+    const email = req.currentUser.email;
 
-    if (!graduateId) {
-        const error = appError.create('graduate id is required', 400, httpStatus.FAIL);
+    if (!email) {
+        const error = appError.create('Login Required', 401, httpStatus.FAIL);
         return next(error);
     }
 
-    const graduate = await db.graduate.findByPk(graduateId);
+    const graduate = await db.graduate.findOne({where:{
+        Email:email
+    }});
 
     if (!graduate) {
         const error = appError.create('Wrong ID', 404, httpStatus.FAIL);
@@ -173,7 +175,7 @@ const getApplicationsForGraduate = asyncWrapper(async (req, res, next) => {
 
     try {
         const applications = await db.application.findAll({
-            where: { GraduateId: graduateId },
+            where: { graduateGraduateId: graduate.GraduateId },
             include: [db.job], // Include the job details
             limit: limit,
             offset: offset

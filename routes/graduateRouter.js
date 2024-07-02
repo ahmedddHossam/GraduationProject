@@ -13,7 +13,7 @@ const router = express.Router()
 router.post('/addGraduatesFromFile', upload.single('file'), graduateController.addGraduatesFromFile);
 router.get('/getAllGraduatesOfDepartment/:Department/:Year', graduateController.getAllGraduatesOfDepartment);
 router.post('/addGraduate',
-    // TokenManipulation.verifyToken,allowedTo("Admin"),
+    // TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.addGraduate)
 
 router.get('/getGraduate/:GraduateId',
@@ -25,11 +25,11 @@ router.get('/getAllGraduates',
     graduateController.getAllGraduates)
 
 router.put('/updateGraduate/:GraduateId',
-    TokenManipulation.verifyToken,allowedTo("Admin")
+    TokenManipulation.verifyToken,allowedTo(["Admin"])
     ,graduateController.updateGraduate)
 
 router.delete('/deleteGraduate/:GraduateId',
-    TokenManipulation.verifyToken,allowedTo("Admin")
+    TokenManipulation.verifyToken,allowedTo(["Admin"])
     ,graduateController.deleteGraduate)
 
 

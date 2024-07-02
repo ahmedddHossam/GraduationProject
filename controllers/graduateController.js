@@ -61,7 +61,8 @@ function validateNationalID(nationalID, birthdate) {
 // add one graduate
 const addGraduate = async (req, res) => {
     try {
-        const { Graduate, Courses } = req.body; 
+        console.log(req.body);
+        const { Graduate, Courses } = req.body;
 
         console.log(Graduate); 
         console.log(Courses);
@@ -194,15 +195,17 @@ const addGraduatesFromFile = async (req, res) => {
 const getOneGraduate = async (req, res) => {
     try {
         let id = req.params.GraduateId;
-        let allCourses = await db.graduate.findByPk(id, {
-            include: [{
-                model: db.course,
-                attributes: ['courseName', 'courseId', 'year', 'grade'],
-                through: {
-                    attributes: ['creditHours', 'Term', 'Level', 'Result'],
-                }
-            }]
-        });
+        let allCourses = await db.graduate.findByPk(id,
+        //     {
+        //     include: [{
+        //         model: db.course,
+        //         attributes: ['courseName', 'courseId', 'year', 'grade'],
+        //         through: {
+        //             attributes: ['creditHours', 'Term', 'Level', 'Result'],
+        //         }
+        //     }]
+        // }
+        );
 
         if (!allCourses) {
             return res.status(404).json({

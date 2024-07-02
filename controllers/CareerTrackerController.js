@@ -90,7 +90,7 @@ const getSkills = asyncWrapper(async (req, res, next) => {
 const updatePosition = asyncWrapper(async (req,res,next)=>{
     const company_name  = req.body.company;
     const position = req.body.position;
-
+    const startDate = req.body.startDate;
 
     const userEmail = req.currentUser.email;
     const graduate = await db.graduate.findOne({ where: { Email: userEmail } });
@@ -118,7 +118,7 @@ const updatePosition = asyncWrapper(async (req,res,next)=>{
                     graduateId: graduate.GraduateId,
                     companyId: company.CompanyId,
                     Position: position,
-                    startDate: Date.now(),
+                    startDate: startDate,
                     endDate: '9999-12-30'
                 });
             }
@@ -129,8 +129,10 @@ const updatePosition = asyncWrapper(async (req,res,next)=>{
                     endDate: "9999-12-30"
                 }
             });
-            currentPosition.endDate = Date.now();
-            await currentPosition.save();
+            if(currentPosition){
+                currentPosition.endDate = Date.now();
+                await currentPosition.save();
+            }
             let newPosition = await db.work_in.create({
                 graduateId: graduate.GraduateId,
                 companyId: company.CompanyId,

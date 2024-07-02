@@ -7,5 +7,7 @@ const router = express.Router();
 
 router.route('/myprofile')
     .get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),profileController.manageProfile)
+router.route('/graduate/:id')
+    .get(TokenManipulation.verifyToken,allowedTo(["Admin"]),profileController.manageProfile)
 
 module.exports=router;

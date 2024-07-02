@@ -40,7 +40,7 @@ route.route('/getNew/:graduateId')
 route.route('/apply/:jobId').
 post(TokenManipulation.verifyToken,allowedTo(["Graduate"]),upload.single('cv'),jobController.apply);
 
-route.route('/getApplicationsForGraduate/:graduateId').
+route.route('/getApplicationsForGraduate').
 get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getApplicationsForGraduate)
 
 route.route('/getAllApplications/:jobId').
