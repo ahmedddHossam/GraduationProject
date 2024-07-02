@@ -40,6 +40,7 @@ const adminRouter = require('./routes/adminRouter');
 const requestRouter = require('./routes/requestRouter');
 const postGraduateRouter = require('./routes/postGraduate.routes');
 const printRouter = require('./routes/prints.routes')
+const courseRouter = require('./routes/courseRouter')
 const {sendMail} = require("./utils/mailer");
 const httpStatusText = require("./utils/httpStatusText");
 app.use(cors({
@@ -54,6 +55,7 @@ app.use('/api/admin', adminRouter); // Adjusted the base path for adminRouter
 app.use('/api/requests', requestRouter); // Adjusted the base path for requestRouter
 app.use('/api/post-graduate', postGraduateRouter); // Adjusted the base path for requestRouter
 app.use('/api/print', printRouter); // Adjusted the base path for requestRouter
+app.use('/api/course', courseRouter);
 app.use('/api/user',userRouter);
 app.use('/api/job',jobRouter);
 app.use('/api/career/',CareerRouter)
