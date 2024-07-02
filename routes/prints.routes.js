@@ -1,13 +1,15 @@
 const express = require('express');
 const {body} = require('express-validator');
 const  {grad,verficationLetter} = require('../controllers/print.controller.js');
+const TokenManipulation = require("../utils/TokenManipulation");
+const allowedTo = require("../middleware/allowedTo");
 const router = express.Router();
 
 
 router.route('/certificate')
-    .post(grad)
+    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),grad)
 router.route('/letter')
-    .post(verficationLetter)
+    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),verficationLetter)
 
 
 module.exports = router

@@ -43,10 +43,16 @@ db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
 
 
+
 db.sequelize.sync({ force: false })
     .then(() => {
         console.log('yes re-sync done!')
     })
+
+db.jobPublishNotification = require('./JobPublishNotification')(sequelize, DataTypes)
+db.skill = require('./skillModel')(sequelize, DataTypes)
+db.graduateSkill = require('./GraduateSkillModel')(sequelize, DataTypes)
+
 
 // relationships graduate,admin,superAdmin is a user
 db.graduate.belongsTo(db.user)
@@ -57,8 +63,8 @@ db.superAdmin.belongsTo(db.user)
 db.graduate.belongsTo(db.department)
 
 //relationship between graduates and companies
-db.graduate.belongsToMany(db.company, { through: db.work_in })
-db.company.belongsToMany(db.graduate, { through: db.work_in })
+db.graduate.belongsToMany(db.company, { through: db.work_in ,foreignKey: 'graduateId', otherKey: 'companyId' })
+db.company.belongsToMany(db.graduate, { through: db.work_in, foreignKey: 'companyId', otherKey: 'graduateId'  })
 
 db.postgraduateStudies.belongsTo(db.graduate)
 
@@ -66,6 +72,12 @@ db.application.belongsTo(db.graduate)
 db.application.belongsTo(db.job)
 
 db.job.belongsTo(db.admin)
+
+db.jobPublishNotification.belongsTo(db.graduate)
+db.jobPublishNotification.belongsTo(db.job)
+
+db.graduate.belongsToMany(db.skill, { through: db.graduateSkill, foreignKey: 'graduateId', otherKey: 'skillId' });
+db.skill.belongsToMany(db.graduate, { through: db.graduateSkill, foreignKey: 'skillId', otherKey: 'graduateId' });
 
 db.course.belongsTo(db.department)
 
@@ -80,5 +92,9 @@ db.request.belongsTo(db.graduate)
 
 db.graduate.belongsToMany(db.course, { through: db.enrolled_in })
 db.course.belongsToMany(db.graduate, { through: db.enrolled_in })
+db.sequelize.sync({ force: false })
+    .then(() => {
+        console.log('yes re-sync done!')
+    })
 
 module.exports = db;

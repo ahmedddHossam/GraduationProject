@@ -3,12 +3,19 @@ const { Op, literal, DATE, where } = require('sequelize');
 const Joi = require('joi');
 const xlsx = require('xlsx');
 const fs = require('fs');
+
 const httpStatusText = require('../utils/httpStatusText');
 const { log } = require('console');
 // const Graduate = db.graduate;
 // const Course = db.courses
 // const enrolled = db.enrolled_in
 // const { Graduate, Course, Enrolled_in } = db;
+
+const Graduate = db.graduate;
+const Request = db.request;
+const { sendmail } = require('../utils/mailer');
+const { timeStamp } = require('console');
+const {addNewGraduate} = require('./authController');
 
 const graduateSchema = Joi.object({
     GraduateId: Joi.number().required(),
@@ -64,12 +71,14 @@ const addGraduate = async (req, res) => {
             return res.status(400).send('National ID does not match the provided birthdate');
         }
 
+
         // Validate Mobile Number format
         if (!/^\d{11}$/.test(Graduate.MobileNumber)) {
             return res.status(400).send('Mobile number must be 11 digits');
         }
 
         let newGraduate = await db.graduate.create(Graduate);
+        addNewGraduate(newGraduate.Email,newGraduate.NationalId,newGraduate.Name);
         let coursesList = [];
 
         // Enroll in courses
@@ -99,12 +108,14 @@ const addGraduate = async (req, res) => {
             }));
         }
 
-        res.json({
+        res.status(200).json({
             "status": "success",
             "data": { "graduate": newGraduate ,
                 "Courses": coursesList
             }
         });
+        
+        
     } catch (error) {
         console.error('Error adding graduate:', error);
         res.status(500).send('Internal server error');
