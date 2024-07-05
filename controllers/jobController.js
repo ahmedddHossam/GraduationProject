@@ -1,3 +1,4 @@
+
 const asyncWrapper = require('../middleware/asyncWrapper');
 const db = require('../models')
 const appError = require('../utils/appError');
@@ -45,7 +46,7 @@ const publish = asyncWrapper(async (req, res, next)=>{
         console.log(2);
         await Notify(newJob,io);
 
-        return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "Job Published successfully"}});
+        return res.status(201).json({status: httpStatus.SUCCESS, data:{data:newJob,message:'Job added successfully'}});
     }
     catch (err)
     {
@@ -416,3 +417,4 @@ module.exports = {
     getApplications,
     updateApplicationStatus
 };
+

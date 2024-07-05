@@ -22,7 +22,8 @@ const manageProfile = async(req,res,next)=>{
                     attributes: ['CompanyName'],
                     through: {
                         attributes: ['Position', 'startDate', 'endDate']
-                    }
+                    },
+                    required:true
                 }
             ]
 
@@ -48,7 +49,7 @@ const manageProfile = async(req,res,next)=>{
                     attributes: ['CompanyName'],
                     through: {
                         attributes: ['Position', 'startDate', 'endDate']
-                    }
+                    },
                 }
             ]
 
@@ -65,4 +66,5 @@ const manageProfile = async(req,res,next)=>{
 
 module.exports = {
     manageProfile,
+
 }

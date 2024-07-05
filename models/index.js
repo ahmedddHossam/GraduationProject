@@ -63,8 +63,8 @@ db.superAdmin.belongsTo(db.user)
 db.graduate.belongsTo(db.department)
 
 //relationship between graduates and companies
-db.graduate.belongsToMany(db.company, { through: db.work_in ,foreignKey: 'graduateId', otherKey: 'companyId' })
-db.company.belongsToMany(db.graduate, { through: db.work_in, foreignKey: 'companyId', otherKey: 'graduateId'  })
+db.graduate.belongsToMany(db.company, { through: db.work_in ,foreignKey: 'graduateId' })
+db.company.belongsToMany(db.graduate, { through: db.work_in, foreignKey: 'companyId'  })
 
 db.postgraduateStudies.belongsTo(db.graduate)
 

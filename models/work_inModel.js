@@ -1,27 +1,27 @@
 const { Sequelize, DataTypes } = require("sequelize");
 
 module.exports = (Sequelize, DataTypes) => {
-    const Work_in = Sequelize.define("work_in" , {
-        id:{
+    const Work_in = Sequelize.define("work_in", {
+        id: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            autoIncrement:true,
-            primaryKey:true
+            autoIncrement: true,
+            primaryKey: true
         },
         graduateId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'Graduates',
-                key: 'GraduateId'
+                model: 'graduates',
+                key: 'GraduateId',
             }
         },
         companyId: {
             type: DataTypes.INTEGER,
             allowNull: false,
             references: {
-                model: 'Company',
-                key: 'CompanyId'
+                model: 'companies',
+                key: 'CompanyId',
             }
         },
         Position: {
@@ -36,7 +36,13 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: false
         }
-    }
-    );
+    }, {
+        indexes: [
+            {
+                unique: true,
+                fields: ['graduateId', 'companyId', 'Position']
+            }
+        ]
+    });
     return Work_in;
 }

@@ -1,3 +1,4 @@
+
 const asyncWrapper = require('../middleware/asyncWrapper');
 const db = require('../models')
 const appError = require('../utils/appError');
@@ -6,7 +7,6 @@ const bcrypt=require('bcryptjs');
 const TokenManipulation = require('../utils/TokenManipulation');
 const {getDecoded} = require("../utils/TokenManipulation");
 const {where, DATEONLY} = require("sequelize");
-
 const addSkills = asyncWrapper(async (req,res,next)=>{
     const skills = req.body.skills;
     const userEmail = req.currentUser.email;
@@ -87,70 +87,69 @@ const getSkills = asyncWrapper(async (req, res, next) => {
     }
 });
 
-const updatePosition = asyncWrapper(async (req,res,next)=>{
-    const company_name  = req.body.company;
-    const position = req.body.position;
-    const startDate = req.body.startDate;
 
+
+const updatePosition = asyncWrapper(async (req, res, next) => {
+    const { company: company_name, position, startDate } = req.body;
     const userEmail = req.currentUser.email;
-    const graduate = await db.graduate.findOne({ where: { Email: userEmail } });
 
-    let [company] = await db.company.findOrCreate({
-        where: {CompanyName : company_name}
-    });
-
-    let existingAssociation = await db.work_in.findOne({
-        where: {
-            graduateId: graduate.GraduateId,
-            companyId: company.CompanyId
+    try {
+        const graduate = await db.graduate.findOne({ where: { Email: userEmail } });
+        if (!graduate) {
+            throw new Error('Graduate not found');
         }
-    });
 
-    console.log(graduate.GraduateId,position,company)
-    try{
-        if (existingAssociation) {
-            if (!(existingAssociation.Position === position)) {
+        let [company] = await db.company.findOrCreate({
+            where: { CompanyName: company_name }
+        });
 
-                existingAssociation.endDate = Date.now();
-                await existingAssociation.save();
+        const formattedStartDate = startDate;
 
-                let newPosition = await db.work_in.create({
-                    graduateId: graduate.GraduateId,
-                    companyId: company.CompanyId,
-                    Position: position,
-                    startDate: startDate,
-                    endDate: '9999-12-30'
-                });
+        // Check if there is an existing association with the same graduate, company, and position
+        let existingAssociation = await db.work_in.findOne({
+            where: {
+                graduateId: graduate.GraduateId,
+                companyId: company.CompanyId,
+                Position: position
             }
+        });
+
+        if (existingAssociation) {
+            // If the same position already exists, we might update the end date if needed
+            existingAssociation.endDate = new Date();
+            await existingAssociation.save();
         } else {
+            // Check if there is any other current position with the same graduate and end it
             let currentPosition = await db.work_in.findOne({
                 where: {
                     graduateId: graduate.GraduateId,
-                    endDate: "9999-12-30"
+                    companyId: company.CompanyId,
+                    endDate: '9999-12-30'
                 }
             });
-            if(currentPosition){
-                currentPosition.endDate = Date.now();
+
+            if (currentPosition) {
+                currentPosition.endDate = new Date();
                 await currentPosition.save();
             }
-            let newPosition = await db.work_in.create({
+
+            // Create the new position
+            await db.work_in.create({
                 graduateId: graduate.GraduateId,
                 companyId: company.CompanyId,
                 Position: position,
-                startDate: Date.now(),
+                startDate: formattedStartDate,
                 endDate: '9999-12-30'
             });
         }
-        return res.status(200).json({status:httpStatus.SUCCESS,message : "updated successfully "});
-    }
-    catch (err)
-    {
-        console.log(err)
-        const error = appError.create('Failed to update position ',500,httpStatus.ERROR);
+
+        return res.status(200).json({ status: httpStatus.SUCCESS, message: "Updated successfully" });
+    } catch (err) {
+        console.error("Validation Error: ", err.errors || err.message); // Log detailed validation errors
+        const error = appError.create(err.message, 500, httpStatus.ERROR);
         return next(error);
     }
-})
-
+});
 const getPositions = asyncWrapper(async (req, res, next) => {
     const graduateId = req.params.graduateId;
 
