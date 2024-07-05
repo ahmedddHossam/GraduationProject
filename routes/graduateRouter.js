@@ -16,7 +16,7 @@ router.post('/addGraduate',
     // TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.addGraduate)
 
-router.get('/getGraduate/:GraduateId',
+router.get('/getGraduate/:NationalId',
     TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.getOneGraduate)
 
@@ -24,13 +24,17 @@ router.get('/getAllGraduates',
     TokenManipulation.verifyToken,allowedTo(["Admin"]),
     graduateController.getAllGraduates)
 
-router.put('/updateGraduate/:GraduateId',
+router.put('/addCourseToGraduate/:NationalId',
+    TokenManipulation.verifyToken,allowedTo(["Admin"])
+    ,graduateController.addCourseToGraduate)
+
+router.put('/updateGraduate/:NationalId',
     TokenManipulation.verifyToken,allowedTo(["Admin"])
     ,graduateController.updateGraduate)
 
-router.delete('/deleteGraduate/:GraduateId',
+router.delete('/deleteCourse/:NationalId/:courseId',
     TokenManipulation.verifyToken,allowedTo(["Admin"])
-    ,graduateController.deleteGraduate)
+    ,graduateController.deleteCourse)
 
 
 module.exports = router
