@@ -16,6 +16,9 @@ const Request = db.request;
 const { sendmail } = require('../utils/mailer');
 const { timeStamp } = require('console');
 const {addNewGraduate} = require('./authController');
+const asyncWrapper = require("../middleware/asyncWrapper");
+const appError = require("../utils/appError");
+const httpStatus = require("../utils/httpStatusText");
 
 const graduateSchema = Joi.object({
     GraduateId: Joi.number().required(),
@@ -382,7 +385,7 @@ const deleteCourse = async (req, res) => {
 }
 
 
-// update Graduate 
+// update Graduate
 const updateGraduate = async (req, res) => {
     try {
         const nationalId = req.params.NationalId;
@@ -441,6 +444,60 @@ const updateGraduate = async (req, res) => {
     }
 };
 
+const addGraduateCourseFromFile = asyncWrapper(async (req, res,next) => {
+    try {
+        const file = req.file;
+
+        if (!file) {
+            return res.status(400).send('No file uploaded');
+        }
+
+        if (!Graduate) {
+            return res.status(500).send('Graduate model not found');
+        }
+
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        let rows = xlsx.utils.sheet_to_json(sheet);
+
+
+        for (const row of rows){
+            const graduate_id = parseInt(row.stud_id);
+            const graduate = await db.oldBaylawGraduate.findByPk(graduate_id);
+
+            if(!graduate)
+            {
+                const error = appError.create('Wrong ID',404,httpStatus.FAIL);
+                return next(error);
+            }
+
+
+            const newCourse = await db.enrolled_in.create({
+                courseId : row.subj_id,
+                courseName: row.subj_name,
+                Grade : grade,
+                Result:result,
+                Term:row.term,
+                Year:row.year,
+                Level:row.level,
+                graduateId:row.stud_id,
+                creditHours : row.creditHours,
+                termWork : row.termWork,
+                examWork: row.examWork
+            })
+
+
+        }
+
+        fs.unlinkSync(file.path);
+        return res.status(201).json({status: httpStatus.SUCCESS, message:"Added successfully"});
+
+    } catch (error) {
+        console.error('Error adding graduates from file:', error);
+        res.status(500).send('Internal server error');
+    }
+});
 
 
 module.exports = {
@@ -451,5 +508,6 @@ module.exports = {
     deleteCourse,
     addGraduatesFromFile,
     getAllGraduatesOfDepartment,
-    updateGraduate
+    updateGraduate,
+    addGraduateCourseFromFile
 }

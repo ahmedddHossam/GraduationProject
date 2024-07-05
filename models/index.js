@@ -42,7 +42,8 @@ db.response = require('./responseModel.js')(sequelize, DataTypes)
 db.work_in = require('./work_inModel.js')(sequelize, DataTypes)
 db.enrolled_in = require('./enrolled_inModel.js')(sequelize, DataTypes)
 db.announcement= require('./announcementModel')(sequelize,DataTypes)
-
+db.oldBaylawGraduate= require('./oldBaylawGraduateModel')(sequelize,DataTypes)
+db.oldBaylaweEnrolledIn= require('./oldBaylawEnrolledIn')(sequelize,DataTypes)
 
 db.sequelize.sync({ force: false })
     .then(() => {
@@ -103,6 +104,10 @@ db.course.belongsToMany(db.graduate, {
     foreignKey: 'courseId', // foreign key in the enrolled_in table referencing course
     otherKey: 'graduateId' // foreign key in the enrolled_in table referencing graduate
 });
+db.oldBaylaweEnrolledIn.belongsTo(db.oldBaylawGraduate, {
+    foreignKey: 'graduateId', // foreign key in the enrolled_in table referencing graduate
+});
+
 
 db.sequelize.sync({ force: false })
     .then(() => {

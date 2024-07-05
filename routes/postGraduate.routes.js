@@ -42,6 +42,6 @@ router.route('/Foreigner').post(upload.fields([
     { name: 'diplomaCertificate', maxCount: 1 },
 ]),ApplyPostGradForeinger);
 
-
+router.route('/getPostGraduateRequest/:NationalId').get(getPostGraduateRequest)
 
 module.exports = router

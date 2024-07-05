@@ -36,13 +36,6 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.DATEONLY,
             allowNull: false
         }
-    }, {
-        indexes: [
-            {
-                unique: true,
-                fields: ['graduateId', 'companyId', 'Position']
-            }
-        ]
-    });
+    } );
     return Work_in;
 }

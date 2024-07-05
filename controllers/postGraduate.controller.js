@@ -30,8 +30,8 @@ const getPostGraduateAllRequest =asyncWrapper(
 //get requests
 const getPostGraduateRequest =asyncWrapper(
     async (req,res)=>{
-        const {id} = req.params;
-        const request = await db.postgraduateStudies.findByPk(id);
+        const {NationalId} = req.params;
+        const request = await db.postgraduateStudies.findAll({where:{nationalIDORPassport:NationalId}});
         res.json({"status":httpStatusText.SUCCESS,
             "data":{"request":request}
         });

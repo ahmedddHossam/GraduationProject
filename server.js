@@ -37,6 +37,7 @@ const httpStatus = require('./utils/httpStatusText');
 
 
 const graduateRouter = require('./routes/graduateRouter');
+const oldGraduateRouter = require('./routes/oldBaylawGraduateRoute');
 const adminRouter = require('./routes/adminRouter');
 const requestRouter = require('./routes/requestRouter');
 const postGraduateRouter = require('./routes/postGraduate.routes');
@@ -53,6 +54,7 @@ app.use(cors({
 }));
 
 app.use('/api/graduates', graduateRouter);
+app.use('/api/oldGraduates', oldGraduateRouter);
 app.use('/api/admin', adminRouter); // Adjusted the base path for adminRouter
 app.use('/api/requests', requestRouter); // Adjusted the base path for requestRouter
 app.use('/api/post-graduate', postGraduateRouter); // Adjusted the base path for requestRouter
@@ -68,7 +70,7 @@ app.all('*', (req, res, next) => {
     return res.status(404).json({ status: httpStatus.ERROR, message: "Page not found" })
 });
 app.use((err, req, res, next) => {
-    return res.status(err.statusCode || 500).json({ status: err.statusText || httpStatus.ERROR, message: err.message });
+    return res.status(err.statusCode || 500).json({ status: err.statusText || httpStatus.ERROR, message: err.message  });
 });
 
 const PORT = process.env.PORT || 5000;

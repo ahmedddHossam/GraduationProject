@@ -13,7 +13,8 @@ module.exports = (Sequelize, DataTypes) => {
         },
         Status: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            defaultValue:"Pending"
         },
         nationalIDORPassport: {
             type: DataTypes.STRING,

@@ -11,6 +11,7 @@ const router = express.Router()
 
 
 router.post('/addGraduatesFromFile', upload.single('file'), graduateController.addGraduatesFromFile);
+router.post('/addGraduatesCourseFromFile', upload.single('file'), graduateController.addGraduateCourseFromFile);
 router.get('/getAllGraduatesOfDepartment/:Department/:Year', graduateController.getAllGraduatesOfDepartment);
 router.post('/addGraduate',
     // TokenManipulation.verifyToken,allowedTo(["Admin"]),

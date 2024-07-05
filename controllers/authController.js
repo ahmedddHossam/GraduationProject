@@ -83,14 +83,14 @@ const logIn = asyncWrapper(async (req,res,next)=>{
 
     if(!user)
     {
-        const error = appError.create('Wrong email',400,httpStatus.FAIL);
+        const error = appError.create('Wrong email',404,httpStatus.FAIL);
         return next(error);
     }
     const isMatched = await bcrypt.compare(password,user.Password)
 
     if(!isMatched)
     {
-        const error = appError.create('Wrong password',400,httpStatus.FAIL);
+        const error = appError.create('Wrong password',404,httpStatus.FAIL);
         return next(error);
     }
 
