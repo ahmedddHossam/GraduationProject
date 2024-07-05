@@ -1,6 +1,6 @@
 const {body,validationResult} = require('express-validator');
 const db = require('../models/index');
-const httpStatusText = require('../utils/httpStatusText')
+const httpStatusText = require('../utils/httpStatusText');
 const fs = require('fs');
 const asyncWrapper = require('../middleware/asyncWrapper')
 const appError = require('../utils/appError')
@@ -52,12 +52,44 @@ const updateStatus = asyncWrapper(
 )
 
 // Make a post graduate request
-const ApplyPostGrad = asyncWrapper(async (req, res) => {
+const ApplyPostGradEgyptian = asyncWrapper(async (req, res) => {
     const errors = validationResult(req);
     if (errors.isEmpty()) {
         const postData = { ...req.body};
-        const certFields = ['personalPhoto','bachelorsCertificate','militaryCertificate','dataForm','informationForm','armedForcesApproval','officersApproval','scoreReport','birthCertificate','workplaceApproval','nationalIdCard'];
+        let certFields = ['personalPhoto','bachelorsCertificate','militaryCertificate','armedForcesApproval','officersApproval','scoreReport','birthCertificate','workplaceApproval','nationalIdCardOrPassport'];
+        if(postData.Studies==="PhD"){
+            certFields.push("diplomaCertificate");
+        }
+        for (const field of certFields) {
+            if (req.files && req.files[field]) {
+                // Save file path to the corresponding field
+                postData[field] = String(req.files[field][0]['path']);
+            }
+        }
+        postData['Status'] = 'pending';
+        console.log(postData);
+        //Save the request to the database
+        const newPostReq =  db.postgraduateStudies.build(postData);
+        await newPostReq.save();
 
+        res.status(201).json({ status: httpStatusText.SUCCESS, data: { request: newPostReq } });
+    } else {
+        // Delete uploaded file if there are validation errors
+        if (req.file) {
+            await unlinkAsync(req.file.path);
+        }
+        res.status(400).json({ status: httpStatusText.FAIL, data: { errors: errors.array() } });
+    }
+});
+
+const ApplyPostGradForeinger = asyncWrapper(async (req, res) => {
+    const errors = validationResult(req);
+    if (errors.isEmpty()) {
+        const postData = { ...req.body};
+        const certFields = ['personalPhoto','bachelorsCertificate','candidacyLetter','dataForm','informationForm','scoreReport','birthCertificate','nationalIdCardOrPassport','adisCertificate'];
+        if(postData.Studies==="PhD"){
+            certFields.push("diplomaCertificate");
+        }
         for (const field of certFields) {
             if (req.files && req.files[field]) {
                 // Save file path to the corresponding field
@@ -82,5 +114,5 @@ const ApplyPostGrad = asyncWrapper(async (req, res) => {
 
 
 module.exports ={
-    getPostGraduateRequest,ApplyPostGrad,getPostGraduateAllRequest,updateStatus
+    getPostGraduateRequest,ApplyPostGradEgyptian,ApplyPostGradForeinger,getPostGraduateAllRequest,updateStatus
 }

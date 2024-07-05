@@ -15,6 +15,27 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
+        nationalIDORPassport: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        phone:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },program:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },email:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },Name:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },
+        nationality:{
+            type:DataTypes.STRING,
+            allowNull:false
+        },
         bachelorsCertificate: {
             type: DataTypes.STRING,
             allowNull: false
@@ -23,17 +44,17 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        nationalIdCard: {
+        nationalIdCardOrPassport: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         workplaceApproval: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         armedForcesApproval: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         scoreReport: {
             type: DataTypes.STRING,
@@ -45,40 +66,33 @@ module.exports = (Sequelize, DataTypes) => {
         },
         militaryCertificate: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         officersApproval: {
             type: DataTypes.STRING,
-            allowNull: false
-        },
-        Passport: {
-            type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         dataForm: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         informationForm: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         diplomaCertificate: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         candidacyLetter: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         adisCertificate: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
-        Timestamp: {
-            type: DataTypes.DATE,
-            allowNull: false
-        }
+
         
     })
 

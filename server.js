@@ -27,6 +27,7 @@ app.set('io', io);
 
 const upload = multer({ dest: 'uploads/' });
 const userRouter = require('./routes/userRoute');
+const analysisRouter = require('./routes/analysisRoutes');
 const CareerRouter = require('./routes/CareerTrackerRouter');
 const jobRouter = require('./routes/jobRoute');
 const profileRouter = require('./routes/profileRouter')
@@ -62,6 +63,7 @@ app.use('/api/job',jobRouter);
 app.use('/api/career/',CareerRouter)
 app.use('/api/profile',profileRouter)
 app.use('/api/announcement',announcementRouter)
+app.use('/api/analysis',analysisRouter)
 app.all('*', (req, res, next) => {
     return res.status(404).json({ status: httpStatus.ERROR, message: "Page not found" })
 });
