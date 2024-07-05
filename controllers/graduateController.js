@@ -61,8 +61,7 @@ function validateNationalID(nationalID, birthdate) {
 // add one graduate
 const addGraduate = async (req, res) => {
     try {
-        console.log(req.body);
-        const { Graduate, Courses } = req.body;
+        const { Graduate, Courses } = req.body; 
 
         console.log(Graduate); 
         console.log(Courses);
@@ -194,18 +193,19 @@ const addGraduatesFromFile = async (req, res) => {
 // search for graduate by id
 const getOneGraduate = async (req, res) => {
     try {
-        let id = req.params.GraduateId;
-        let allCourses = await db.graduate.findByPk(id,
-        //     {
-        //     include: [{
-        //         model: db.course,
-        //         attributes: ['courseName', 'courseId', 'year', 'grade'],
-        //         through: {
-        //             attributes: ['creditHours', 'Term', 'Level', 'Result'],
-        //         }
-        //     }]
-        // }
-        );
+        let nationalid = req.params.NationalId;
+        console.log(nationalid)
+        let allCourses = await db.graduate.findOne({
+            where: { nationalid: nationalid },
+            include: [{
+                model: db.course,
+                attributes: ['courseName', 'courseId', 'year', 'grade'],
+                through: {
+                    attributes: ['creditHours', 'Term', 'Level', 'Result'],
+                }
+            }]
+        });
+        console.log(allCourses)
 
         if (!allCourses) {
             return res.status(404).json({
@@ -266,56 +266,190 @@ const getAllGraduates = async (req, res) => {
 }
 
 // update existing graduate
-const updateGraduate = async (req, res) => {
+const addCourseToGraduate = async (req, res) => {
     try {
-        let id = req.params.GraduateId;
+        const nationalId = req.params.NationalId;
+        const { Courses } = req.body;
 
-        const graduate = await Graduate.findOne({ where: { GraduateId: id } });
-        if (!graduate) {
-            return res.status(404).send('Graduate not found');
+        let grad = await db.graduate.findOne({
+            where: {
+                NationalId: nationalId
+            }
+        });
+
+        if (!Courses || !Array.isArray(Courses)) {
+            return res.status(400).json({ status: 'fail', message: 'Courses is required and should be an array' });
         }
+        console.log(Courses);
 
-        await graduate.update(req.body);
+        const coursesList = [];
+
+        await Promise.all(Courses.map(async (course) => {
+            try {
+                // Find the course by courseId
+                const enrolledCourse = await db.course.findByPk(course.courseId);
+                if (enrolledCourse) {
+                    await db.enrolled_in.create({
+                        GraduateId: grad.GraduateId,
+                        courseId: course.courseId,
+                        Grade: course.Grade,
+                        Term: course.Term,
+                        Year: course.Year,
+                        Result: course.Result,
+                        termWork: course.termWork,
+                        examWork: course.examWork,
+                        Level: course.Level,
+                        creditHours: course.creditHours
+                    });
+                    coursesList.push({
+                        courseId: course.courseId,
+                        Grade: course.Grade,
+                        Term: course.Term,
+                        Year: course.Year,
+                        Result: course.Result,
+                        termWork: course.termWork,
+                        examWork: course.examWork,
+                        Level: course.Level,
+                        creditHours: course.creditHours
+                    });
+                } else {
+                    console.log(`Course with ID ${course.courseId} not found`);
+                }
+            } catch (error) {
+                console.error(`Error enrolling in course with ID ${course.courseId}:`, error);
+            }
+        }));
 
         res.json({
-            "status": httpStatusText.SUCCESS,
-            "data": { "graduate": graduate }
-        })
+            status: 'success',
+            data: {
+                graduate: nationalId,
+                Courses: coursesList
+            }
+        });
     } catch (error) {
+        console.error('Internal server error:', error);
         res.status(500).send('Internal server error');
     }
-}
+};
+
+
+
+
 
 // delete graduate
-const deleteGraduate = async (req, res) => {
+const deleteCourse = async (req, res) => {
     try {
-        let id = req.params.GraduateId;
+        let nationalid = req.params.NationalId;
+        let courseId = req.params.courseId;
 
-        const graduate = await Graduate.findOne({ where: { GraduateId: id } });
-        if (!graduate) {
-            return res.status(404).send('Graduate not found');
-        }
-
-        await graduate.destroy({ where: { GraduateId: id } });
-
-        res.json({
-            "status": httpStatusText.SUCCESS,
-            "text": "graduate deleted successfully"
+        let grad = await db.graduate.findOne({
+            where: {
+                NationalId: nationalid
+            }
         })
 
+        console.log(nationalid)
+        console.log(courseId)
+
+        const result = await db.enrolled_in.destroy({
+            where: {
+                GraduateId: grad.GraduateId,
+                CourseId: courseId 
+            }
+        });
+
+        if (result === 0) {
+            return res.status(404).json({
+                status: "fail",
+                text: "No record found to delete"
+            });
+        }
+
+        res.json({
+            status: "success",
+            text: "Record deleted successfully"
+        });
+
     } catch (error) {
-        console.error('Error deleting graduate:', error);
-        res.status(500).send('Internal server error');
+        console.error('Error deleting record:', error);
+        res.status(500).json({
+            status: "error",
+            text: 'Internal server error',
+            error: error.message
+        });
     }
 }
+
+
+// update Graduate 
+const updateGraduate = async (req, res) => {
+    try {
+        const nationalId = req.params.NationalId;
+        const { Graduate, Courses } = req.body;
+        console.log(Courses)
+
+        // Update graduate information
+        let grad = await db.graduate.findOne({
+            where: {
+                NationalId: nationalId
+            }
+        })
+
+        if (!grad) {
+            return res.status(404).json({
+                status: "fail",
+                text: "Graduate not found"
+            });
+        }
+
+        grad.Email = Graduate.Email;
+        grad.MobileNumber = Graduate.MobileNumber;
+        grad.Name = Graduate.Name;
+        grad.Address = Graduate.Address;
+
+        await grad.save(); // Save the updated graduate information
+
+        // Update enrolled course information
+        for ( const course of Courses ) {
+            console.log(course)
+             let Course = await db.enrolled_in.findOne({
+                where: {
+                    GraduateId: grad.GraduateId ,
+                    courseId: course.courseId
+                }
+             })
+             Course.Year = course.year;
+            Course.Term = course.enrolled_in.Term;
+            Course.Level = course.enrolled_in.Level;
+            Course.Result = course.enrolled_in.Result;
+            await Course.save();
+        }
+
+        res.json({
+            status: "success",
+            text: "Graduate updated successfully"
+        });
+
+    } catch (error) {
+        console.error('Error updating graduate:', error);
+        res.status(500).json({
+            status: "error",
+            text: 'Internal server error',
+            error: error.message
+        });
+    }
+};
+
 
 
 module.exports = {
     addGraduate,
     getOneGraduate,
     getAllGraduates,
-    updateGraduate,
-    deleteGraduate,
+    addCourseToGraduate,
+    deleteCourse,
     addGraduatesFromFile,
-    getAllGraduatesOfDepartment
+    getAllGraduatesOfDepartment,
+    updateGraduate
 }
