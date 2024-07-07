@@ -28,7 +28,9 @@ const graduateSchema = Joi.object({
     BirthDate: Joi.date().required(),
     Major:Joi.string().required(),
     Grade : Joi.string().required(),
-    Minor: Joi.string().required()
+    Minor: Joi.string().required(),
+    arabicName:Joi.string().required(),
+    projectGrade:Joi.string().required(),
 });
 
 // national id validation

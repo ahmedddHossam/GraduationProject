@@ -1,0 +1,5 @@
+﻿GraduateId,Name,Email,Gender,GPA,Department,NationalId,Nationality,StartDate,EndDate,MobileNumber,Address,Bylaw,BylawVersion,BirthDate,arabicName,projectGrade
+3,hoss,hoss@gmail.com,Male,3.00,IS,30208312101178,egyptian,2020/10/17,2024/07/10,1069764860,istanbul,new,2018,2002/08/04,حس,D
+4,ziad,ziad@gmai.com,Male,3.00,IS,30202021237283,egyptian,2020/10/17,2024/07/10,1223454534,warak,new,2018,2002/08/04,زياد,A
+,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,

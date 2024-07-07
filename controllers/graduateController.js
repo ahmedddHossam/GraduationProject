@@ -35,7 +35,10 @@ const graduateSchema = Joi.object({
     Address: Joi.string().required(),
     Bylaw: Joi.string().required(),
     BylawVersion: Joi.string().required(),
-    BirthDate: Joi.date().required()
+    BirthDate: Joi.date().required(),
+    arabicName:Joi.string().required(),
+    projectGrade:Joi.string().required(),
+
 });
 
 // national id validation
@@ -141,7 +144,7 @@ const addGraduatesFromFile = async (req, res) => {
             return res.status(500).send('Graduate model not found');
         }
 
-        const workbook = xlsx.readFile(file.path);
+        const workbook = xlsx.readFile(file.path,{codepage:65001});
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         let rows = xlsx.utils.sheet_to_json(sheet);
@@ -168,7 +171,7 @@ const addGraduatesFromFile = async (req, res) => {
         }));
 
         // Validate and prepare data
-        const graduates = [];
+        let graduates = [];
         for (const row of rows) {
             const { error, value } = graduateSchema.validate(row);
             if (error) {
