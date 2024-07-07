@@ -53,6 +53,7 @@ const manageProfile = async(req,res,next)=>{
                     through: {
                         attributes: ['Position', 'startDate', 'endDate']
                     },required:false
+
                 }
             ]
 

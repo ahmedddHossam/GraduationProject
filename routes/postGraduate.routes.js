@@ -16,7 +16,7 @@ router.route('/')
 
 
 router.route('/download/:id')
-    .get(TokenManipulation.verifyToken,allowedTo(["Admin"]),downloadRequestFiles)
+    .get(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin"]),downloadRequestFiles)
 
 router.route('/egyptian').post(upload.fields([
     { name: 'personalPhoto', maxCount: 1 },
