@@ -320,9 +320,12 @@ const addGraduateFromFile = asyncWrapper(async (req,res,next)=>{
             BirthDate: new Date(row.BirthDate),
             Major : row.Major,
             Minor : row.Minor,
-            Grade : row.Grade
+            Grade : row.Grade,
+            arabicName : row.arabicName,
+            projectGrade : row.projectGrade
 
         }));
+        // Create a set to store GraduateIds
 
         // Validate and prepare data
         const graduates = [];
@@ -334,20 +337,26 @@ const addGraduateFromFile = asyncWrapper(async (req,res,next)=>{
                 continue;
             }
             graduates.push(value);
+
         }
 
         if (graduates.length === 0) {
             return res.status(400).send('No valid graduate data found in the file');
         }
 
-        console.log("AAAAAAAAAAAAAAAAAAAAAAAAA")
+
         const newGraduates = await Graduate.bulkCreate(graduates);
+
+        for (const graduate of graduates) {
+            await addNewGraduate(graduate.Email,graduate.NationalId,graduate.Name);
+        }
+        fs.unlinkSync(file.path);
+
         res.json({
             "status": httpStatusText.SUCCESS,
             "data": { "graduate": newGraduates }
         })
 
-        fs.unlinkSync(file.path);
     } catch (error) {
         console.error('Error adding graduates from file:', error);
         res.status(500).send('Internal server error');

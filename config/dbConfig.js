@@ -1,7 +1,7 @@
 module.exports = {
     HOST: 'localhost',
     USER: 'root',
-    PASSWORD: 'ziad1234',
+    PASSWORD: '1234567890',
     DB: 'gp_db',
     dialect: 'mysql'
 }

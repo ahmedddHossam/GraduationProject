@@ -162,7 +162,9 @@ const addGraduatesFromFile = async (req, res) => {
             Address: row.Address,
             Bylaw: row.Bylaw,
             BylawVersion: row.BylawVersion.toString(),
-            BirthDate: new Date(row.BirthDate)
+            BirthDate: new Date(row.BirthDate),
+            arabicName : row.arabicName,
+            projectGrade : row.projectGrade
         }));
 
         // Validate and prepare data
@@ -181,12 +183,16 @@ const addGraduatesFromFile = async (req, res) => {
         }
 
         const newGraduates = await Graduate.bulkCreate(graduates);
+        for (const graduate of graduates) {
+            await addNewGraduate(graduate.Email,graduate.NationalId,graduate.Name);
+        }
+        fs.unlinkSync(file.path);
+
         res.json({
             "status": httpStatusText.SUCCESS,
             "data": { "graduate": newGraduates }
         })
 
-        fs.unlinkSync(file.path);
     } catch (error) {
         console.error('Error adding graduates from file:', error);
         res.status(500).send('Internal server error');
