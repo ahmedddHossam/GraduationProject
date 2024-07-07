@@ -7,9 +7,11 @@ const router = express.Router();
 
 
 router.route('/certificate')
-    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),grad)
+    .post(TokenManipulation.verifyToken,allowedTo(["Graduate Affairs Admin"])
+        ,grad)
 router.route('/letter')
-    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),verficationLetter)
+    .post(TokenManipulation.verifyToken,allowedTo(["Graduate Affairs Admin"])
+        ,verficationLetter)
 
 
 module.exports = router

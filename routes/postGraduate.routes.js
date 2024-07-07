@@ -10,8 +10,9 @@ const router = express.Router();
 
 
 router.route('/')
-        .get(TokenManipulation.verifyToken,allowedTo(["Admin"])
-            ,getPostGraduateAllRequest).patch(TokenManipulation.verifyToken,allowedTo(["Admin"]),updateStatus) // add new course to the list
+        .get(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin"])
+            ,getPostGraduateAllRequest)
+    .patch(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin"]),updateStatus) // add new course to the list
 
 
 router.route('/download/:id')

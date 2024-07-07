@@ -15,13 +15,12 @@ const addAnnouncement = asyncWrapper(async (req,res,next)=>{
 
 
     if(!Title){
-        const error = appError.create('Title is required',400,httpStatus.FAIL);
-        return next(error);
+        res.status(400).json({status:httpStatus.FAIL,message: 'Title is required'})
     }
 
     if(!Description){
-        const error = appError.create('Description is required',400,httpStatus.FAIL);
-        return next(error);
+        res.status(400).json({status:httpStatus.FAIL,message: 'Description is required'})
+
     }
     try{
         const admin = await db.admin.findOne({where:{userUserId:req.currentUser.id}});

@@ -109,6 +109,7 @@ io.on('connection', (socket) => {
     socket.on('update_request', async ({  requestId, status  }) => {
         try {
             const request = await Request.findByPk(requestId)
+
             console.log (requestId)
 
             if (request) {

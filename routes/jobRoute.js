@@ -32,10 +32,13 @@ const upload = multer({
 });
 
 route.route('/Publish')
-    .post(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.publish)
+    .post(TokenManipulation.verifyToken,
+        allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+        ,jobController.publish)
 
 route.route('/getNew')
-    .get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getJobNotificationsForGraduate);
+    .get(TokenManipulation.verifyToken,allowedTo(["Graduate"])
+        ,jobController.getJobNotificationsForGraduate);
 
 route.route('/apply/:jobId').
 post(TokenManipulation.verifyToken,allowedTo(["Graduate"]),upload.single('cv'),jobController.apply);
@@ -43,18 +46,25 @@ post(TokenManipulation.verifyToken,allowedTo(["Graduate"]),upload.single('cv'),j
 route.route('/getApplicationsForGraduate').
 get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getApplicationsForGraduate)
 
-route.route('/getAllApplications').
-get(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.getApplications);
+route.route('/getAllApplications')
+    .get(TokenManipulation.verifyToken,
+    allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+    ,jobController.getApplications);
 
 route.route('/getAllJobs').
-get(TokenManipulation.verifyToken,allowedTo(["Admin","Graduate"]),jobController.getJobs);
+get(    TokenManipulation.verifyToken,allowedTo(["Graduate", "Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+    ,jobController.getJobs);
 
 route.route('/updateApplicationStatus/:applicationId')
-    .patch(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.updateApplicationStatus);
+    .patch(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+        ,jobController.updateApplicationStatus);
+
 route.route('/updateJob/:jobId')
-    .patch(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.updateJob);
+    .patch(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+        ,jobController.updateJob);
 route.route('/deleteJob/:jobId')
-    .delete(TokenManipulation.verifyToken,allowedTo(["Admin"]),jobController.deleteJob);
+    .delete(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"])
+        ,jobController.deleteJob);
 
 // route.route('/getAllNotification')
 //     .get(TokenManipulation.verifyToken,allowedTo(["Graduate"]),jobController.getAllJobNotificationForGraduate);

@@ -19,9 +19,7 @@ async function  addNewGraduate(userEmail, password, userName)
 
 async function  addUser(UserName,email,password,role)
 {
-    // console.log("1")
     const hashedPassword = await bcrypt.hash(password,8);
-    // console.log(fName)
     const newUser= await new db.user({
         UserName:UserName,
         Email:email,
@@ -30,52 +28,44 @@ async function  addUser(UserName,email,password,role)
     });
     await newUser.save();
     return newUser;
-    // console.log("2")
 }
 
 
 const signUp = asyncWrapper(async (req,res,next)=>{
     const {UserName,email,password,role} = req.body;
-    // console.log(UserName, email, password, role);
 
     const emailChecker = await db.user.findOne({where:{Email:email }});
 
     if(emailChecker)
     {
-        const error = appError.create('email already exist',400,httpStatus.FAIL);
-        return next(error);
+        res.status(400).json({status:httpStatus.FAIL,message:'email already exist'})
     }
     try {
-        console.log('1')
         const newUser = await addUser(UserName, email, password, role);
         console.log(newUser)
-        if (role === 'Admin') {
-            await addAdmin(newUser.UserId)
+        if (role !== 'Graduate') {
+            await addAdmin(newUser.UserId,role)
         }
-        // console.log('3')
-        // else
-        // {
-        //
-        // }}
         return res.status(200).json({status: httpStatus.SUCCESS, message: "Signed up successfully"});
 
-    }catch (err){
-        console.log(err)}
     }
-);
+    catch (err){
+        console.error(err);
+        const error = appError.create('Internal server error on add new announcement ', 500, httpStatus.FAIL);
+        return next(error)    }}
+    );
 
 const logIn = asyncWrapper(async (req,res,next)=>{
     const {email, password}=req.body;
     // console.log(email , password);
     if(!email)
     {
-        const error = appError.create('email is required',400,httpStatus.FAIL);
-        return next(error);
+        res.status(400).json({message:'email is required',status:httpStatus.FAIL})
+
     }
     if(!password)
     {
-        const error = appError.create('password is required',400,httpStatus.FAIL);
-        return next(error);
+        res.status(400).json({message:'password is required',status:httpStatus.FAIL})
     }
     // console.log('1')
     const user = await db.user.findOne({where:{Email:email }});
@@ -83,15 +73,14 @@ const logIn = asyncWrapper(async (req,res,next)=>{
 
     if(!user)
     {
-        const error = appError.create('Wrong email',404,httpStatus.FAIL);
-        return next(error);
+        res.status(404).json({message:'wrong Email or password',status:httpStatus.FAIL})
     }
     const isMatched = await bcrypt.compare(password,user.Password)
 
     if(!isMatched)
     {
-        const error = appError.create('Wrong password',404,httpStatus.FAIL);
-        return next(error);
+        res.status(404).json({message:'wrong Email or password',status:httpStatus.FAIL})
+
     }
 
     const token =await TokenManipulation.generate({email : user.Email , id:user.UserId, role : user.role});

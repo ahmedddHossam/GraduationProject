@@ -9,10 +9,10 @@ const router = express.Router()
 router.route('/addSkills')
     .post(TokenManipulation.verifyToken,allowedTo(['Graduate']),careerController.addSkills)
 router.route('/skills/:graduateId')
-    .get(TokenManipulation.verifyToken,allowedTo(["Graduate","Admin"]),careerController.getSkills)
+    .get(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"]),careerController.getSkills)
 router.route('/updatePosition')
     .post(TokenManipulation.verifyToken,allowedTo(['Graduate']),careerController.updatePosition)
 router.route('/getPositions/:graduateId')
-    .get(TokenManipulation.verifyToken,allowedTo(["Graduate","Admin"]),careerController.getPositions)
+    .get(TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin", "Super Admin"]),careerController.getPositions)
 
 module.exports = router

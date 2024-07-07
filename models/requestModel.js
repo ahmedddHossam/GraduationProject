@@ -30,8 +30,12 @@ module.exports = (Sequelize, DataTypes) => {
         newRequest:{
             type: DataTypes.STRING,
             allowNull:false,
+        },
+        NumberOfPapers:{
+            type:DataTypes.INTEGER,
+            allowNull:true
         }
-        
+
     })
 
     return Request;

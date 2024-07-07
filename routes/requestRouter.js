@@ -4,8 +4,10 @@ const express = require('express')
 const TokenManipulation = require("../utils/TokenManipulation");
 const allowedTo = require("../middleware/allowedTo");
 const router = express.Router()
-router.get('/',TokenManipulation.verifyToken,allowedTo(["Admin"]), requestController.getAllRequests)
+router.get('/',TokenManipulation.verifyToken,allowedTo([ "Graduate Affairs Admin"]), requestController.getAllRequests)
+
 router.get('/myRequests',TokenManipulation.verifyToken,allowedTo(["Graduate"]), requestController.getUserRequests)
+
 router.post('/sendRequest' ,TokenManipulation.verifyToken,allowedTo(["Graduate"]),requestController.sendRequest)
 
 

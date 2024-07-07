@@ -6,6 +6,7 @@ const allowedTo = require("../middleware/allowedTo");
 
 const router = express.Router()
 
-router.route('/').get(analysisController.Analyze)
+router.route('/')
+    .get(TokenManipulation.verifyToken,allowedTo(["Super Admin"]),analysisController.Analyze)
 
 module.exports = router

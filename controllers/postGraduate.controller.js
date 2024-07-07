@@ -10,6 +10,8 @@ const moment = require("moment");
 const archiver = require('archiver');
 const unlinkAsync = util.promisify(fs.unlink);
 const path = require('path')
+const transporter = require('../config/emailConfig');
+const httpStatus = require("../utils/httpStatusText");
 
 
 //get all requests
@@ -103,18 +105,80 @@ const downloadRequestFiles = asyncWrapper(
 )
 
 const updateStatus = asyncWrapper(
-    async (req,res)=>{
+    async (req,res,next)=>{
+
         const data = req.body;
         console.log(data)
-        const request = await db.postgraduateStudies.update(
-            { 'Status': data.Status }, // values to update
-            { where: { 'applicationId': data.applicationId } } // options
-        );
-        if(request){
-            return res.json({"status":httpStatusText.SUCCESS,data:"SUCCESS"});
+
+        try{
+            const request = await db.postgraduateStudies.update(
+                {'Status': data.Status}, // values to update
+                {where: {'applicationId': data.applicationId}} // options
+            );
+
+            if (!request) {
+                return res.status(404).json({ message: 'request not found' });
+            }
+
+            let email_text;
+
+            if(data.Status === "Approved")
+            {
+                email_text = `Dear ${request.Name},I am pleased to inform you that your application to the ${request.program} program at the Faculty of Computer Science and Artificial Intelligence has been accepted 
+                    You have been admitted to pursue your ${request.Studies} studies. We are excited to welcome you to our academic community and look forward to your contributions to the field.
+                    Please visit the Faculty of Computer Science and Artificial Intelligence to complete the necessary enrollment procedures and obtain further details about your program.
+                    
+                    Congratulations on this significant achievement!
+
+                    Best regards,
+                    FCAI`;
+            }
+
+            else
+            {
+                email_text = `Dear ${request.Name},
+` +
+                    "\n" +
+                    `Thank you for your application to the ${request.program} program at the Faculty of Computer Science and Artificial Intelligence. We appreciate your interest in our institution and the time and effort you put into your application.
+` +
+                    "\n" +
+                    `After careful consideration, we regret to inform you that we are unable to offer you admission to the ${request.Studies}program at this time. The selection process was highly competitive, and we received a large number of exceptional applications.
+` +
+                    "\n" +
+                    "We encourage you to continue pursuing your academic and professional goals and wish you the very best in your future endeavors.\n" +
+                    "\n" +
+                    "Thank you again for your interest in our program.\n" +
+                    "\n" +
+                    "Sincerely,\n" +
+                    "\n" +
+                    "FCAI";
+            }
+
+
+            // Send email to graduate
+            const mailOptions = {
+                from: process.env.EMAIL_ADMIN,
+                to: request.Email,
+                subject: `Application Status for ${request.Studies} at Faculty of Computer Science and Artificial Intelligence`,
+                text: email_text, // change it later
+            };
+
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error)
+                    throw new Error(error.message);
+                }
+            })
+            return res.json({"status": httpStatusText.SUCCESS, data: "SUCCESS"});
+        }
+        catch (error)
+        {
+            const err = appError.create('Internal server error', 500, httpStatus.FAIL);
+            return next(err);
         }
     }
 )
+
 
 // Make a post graduate request
 const ApplyPostGradEgyptian = asyncWrapper(async (req, res) => {

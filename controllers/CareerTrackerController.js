@@ -19,18 +19,13 @@ const addSkills = asyncWrapper(async (req,res,next)=>{
             let [skill] = await db.skill.findOrCreate({
                 where: {name: skillName}
             });
-            // console.log(1)
 
-            // console.log(skill.skillId,graduate.GraduateId)
-
-            // Check if association already exists to avoid duplicates
             const existingAssociation = await db.graduateSkill.findOne({
                 where: {
                     graduateId: graduate.GraduateId,
                     skillId: skill.skillId
                 }
             });
-            // console.log(existingAssociation)
             if(!existingAssociation)
             {
                 let newSkill = await  db.graduateSkill.create({
@@ -96,7 +91,8 @@ const updatePosition = asyncWrapper(async (req, res, next) => {
     try {
         const graduate = await db.graduate.findOne({ where: { Email: userEmail } });
         if (!graduate) {
-            throw new Error('Graduate not found');
+            const error = appError.create('Graduate not found', 404, httpStatus.FAIL);
+            return next(error);
         }
 
         let [company] = await db.company.findOrCreate({

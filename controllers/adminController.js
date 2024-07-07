@@ -10,7 +10,9 @@ const nominateTA = async (req, res) => {
 
         // Calculate the date 2 years ago from today
         let twoYearsAgo = new Date();
+
         twoYearsAgo.setFullYear(twoYearsAgo.getFullYear() - 2);
+
         console.log(twoYearsAgo)
 
         let graduates = await Graduate.findAll({
@@ -26,7 +28,12 @@ const nominateTA = async (req, res) => {
             limit: 15
         });
 
-        res.json({"status":httpStatusText.SUCCESS,
+        if(!graduates)
+        {
+            res.status(404).json({status:httpStatusText.SUCCESS,message:"There are no graduates according to the requirments"})
+        }
+
+        res.status(200).json({"status":httpStatusText.SUCCESS,
             "data": {"graduate": graduates}
         })
     } catch (error) {
