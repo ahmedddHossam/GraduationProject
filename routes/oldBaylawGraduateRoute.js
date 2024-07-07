@@ -19,13 +19,13 @@ router.post('/addGraduatesFromFile', upload.single('file'),
     TokenManipulation.verifyToken,allowedTo([ "Graduate Affairs Admin"])
     ,graduateController.addGraduateFromFile);
 
-router.post('/addGraduate',
-    TokenManipulation.verifyToken,allowedTo([ "Graduate Affairs Admin"])
+router.post('/addGraduate'
     ,graduateController.addGraduate);
 
 
 router.patch('/updateGradute',
     TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin"])
     ,graduateController.updateGraduate)
+router.get('/:NationalId', TokenManipulation.verifyToken,allowedTo(["Post Graduate Studies Admin", "Graduate Affairs Admin"]),graduateController.getOneGraduate)
 
 module.exports = router

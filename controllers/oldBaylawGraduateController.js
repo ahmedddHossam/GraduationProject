@@ -176,6 +176,38 @@ const addGraduate = async (req, res) => {
     }
 };
 
+
+// search for graduate by id
+const getOneGraduate = async (req, res) => {
+    try {
+        let nationalid = req.params.NationalId;
+        console.log(nationalid)
+        let allCourses = await db.oldBaylawGraduate.findOne({
+            where: { Nationalid: nationalid },
+        });
+        console.log(allCourses)
+
+        if (!allCourses) {
+            return res.status(404).json({
+                "status": "failure",
+                "message": "Graduate not found"
+            });
+        }
+
+        res.json({
+            "status": "success",
+            "data": { "graduate": allCourses }
+        });
+    } catch (error) {
+        console.error('Error getting graduate:', error.message);
+        console.error(error.stack);
+        res.status(500).send('Internal server error');
+    }
+};
+
+
+
+
 const addGraduateCourseFromFile = asyncWrapper(async (req, res,next) => {
     try {
         const file = req.file;
@@ -366,4 +398,4 @@ const updateGraduate = asyncWrapper(async (req, res,next) => {
         return next(err);
     }
 });
-module.exports={addGraduateCourseFromFile,addGraduateFromFile,addGraduate,updateGraduate};
+module.exports={addGraduateCourseFromFile,addGraduateFromFile,addGraduate,updateGraduate,getOneGraduate};

@@ -10,10 +10,10 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        // arabicName: {
-        //     type: DataTypes.STRING,
-        //     allowNull: false
-        // },
+        arabicName: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
         Email: {
             type: DataTypes.STRING,
             allowNull: false
@@ -23,6 +23,9 @@ module.exports = (Sequelize, DataTypes) => {
             allowNull: false
         },
         Grade: {
+            type: DataTypes.STRING,
+        },
+        projectGrade: {
             type: DataTypes.STRING,
         },
         total_mark : {
@@ -51,7 +54,7 @@ module.exports = (Sequelize, DataTypes) => {
             allowNull: false
         },
         EndDate: {
-            type: DataTypes.DATE,
+            type: DataTypes.STRING,
             allowNull: false
         },
         MobileNumber: {

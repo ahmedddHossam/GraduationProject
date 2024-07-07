@@ -5,16 +5,17 @@ const { Sequelize, Op } = require("sequelize");
 
 
 const manageProfile = async(req,res,next)=>{
-    let allSkills = null;
-    if(req.currentUser.role==='Admin'){
+    let allSkills = {};
+    if(req.currentUser.role==="Post Graduate Studies Admin" || req.currentUser.role=== "Graduate Affairs Admin" || req.currentUser.role=== "Super Admin"){
         const {id} = req.params;
+        console.log(id);
         allSkills = await db.graduate.findByPk(id, {
             include:[ {
                 model: db.skill,
                 attributes: ['name'],
                 through: {
                     attributes: []
-                }
+                },required:false
 
             },
                 {
@@ -23,11 +24,12 @@ const manageProfile = async(req,res,next)=>{
                     through: {
                         attributes: ['Position', 'startDate', 'endDate']
                     },
-                    required:true
+                    required:false
                 }
             ]
 
         });
+        console.log(allSkills)
     }else if(req.currentUser.role==='Graduate'){
         const grad = req.currentUser;
         console.log(grad.email);
@@ -35,13 +37,14 @@ const manageProfile = async(req,res,next)=>{
         const user = await Graduate.findOne({where:{
                 Email: email
             }});
+
         allSkills = await db.graduate.findByPk(user.GraduateId, {
             include:[ {
                 model: db.skill,
                 attributes: ['name'],
                 through: {
                     attributes: []
-                }
+                },required:false
 
             },
                 {
@@ -49,12 +52,13 @@ const manageProfile = async(req,res,next)=>{
                     attributes: ['CompanyName'],
                     through: {
                         attributes: ['Position', 'startDate', 'endDate']
-                    },
+                    },required:false
                 }
             ]
 
         });
     }
+
 
     if(allSkills){
         res.status(200).send({status:'SUCCESS',data:allSkills});
