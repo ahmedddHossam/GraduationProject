@@ -4,9 +4,10 @@ const route = express.Router();
 
 const authController = require('../Controllers/AuthController')
 const allowedTo = require("../middleware/allowedTo");
+const TokenManipulation = require("../utils/TokenManipulation");
 
 route.route('/signup')
-    .post(authController.signUp)
+    .post(TokenManipulation.verifyToken,allowedTo(["Super Admin"]),authController.signUp)
 
 route.route('/login')
     .post(authController.logIn);
