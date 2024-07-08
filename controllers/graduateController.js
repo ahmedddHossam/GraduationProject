@@ -138,32 +138,61 @@ const addGraduate = async (req, res) => {
         let coursesList = [];
 
         // Enroll in courses
-        if (Courses && Array.isArray(Courses)) {
-            console.log(Courses);
-            await Promise.all(Courses.map(async (course) => {
-                try {
-                    // Find the course by courseId
+        const id = Graduate.GraduateId.slice(0,4);
+        if(id>2008){
+            if (Courses && Array.isArray(Courses)) {
+                console.log(Courses);
+                await Promise.all(Courses.map(async (course) => {
+                    try {
+                        // Find the course by courseId
                         let [enrolledCourse] = await db.course.findOrCreate({where:{courseName:course.courseName}});
-                    if (enrolledCourse) {
-                        await db.enrolled_in.create({
-                            graduateId: newGraduate.GraduateId,
-                            courseId: enrolledCourse.courseId,
-                            Grade: course.Grade, 
-                            Term: course.Term, 
-                            Year: course.Year,
-                            Result: course.Result,
-                            termWork: course.termWork, 
-                            examWork: course.examWork,
-                            Level: course.Level,
-                            creditHours: course.creditHours
-                        });
+                        if (enrolledCourse) {
+                            await db.enrolled_in.create({
+                                GraduateId: newGraduate.GraduateId,
+                                courseId: enrolledCourse.courseId,
+                                Grade: course.Grade,
+                                Term: course.Term,
+                                Year: course.Year,
+                                Result: course.Result,
+                                termWork: course.termWork,
+                                examWork: course.examWork,
+                                Level: course.Level,
+                                creditHours: course.creditHours
+                            });
+                        }
+                        coursesList.push(enrolledCourse)
+                    } catch (error) {
+                        console.error('Error enrolling in course:', error);
                     }
-                    coursesList.push(enrolledCourse)
-                } catch (error) {
-                    console.error('Error enrolling in course:', error);
-                }
-            }));
+                }));
+            }
+        }else{
+            if (Courses && Array.isArray(Courses)) {
+                console.log(Courses);
+                await Promise.all(Courses.map(async (course) => {
+                    try {
+                        // Find the course by courseId
+                        let [enrolledCourse] = await db.course.findOrCreate({where:{courseName:course.courseName}});
+                        if (enrolledCourse) {
+                            await db.oldBaylaweEnrolledIn.create({
+                                GraduateId: newGraduate.GraduateId,
+                                courseName:enrolledCourse.courseName,
+                                courseId: enrolledCourse.courseId,
+                                Grade: course.Grade,
+                                Term: course.Term,
+                                Year: course.Year,
+                                Result: course.Result,
+                                Level: course.Level,
+                            });
+                        }
+                        coursesList.push(enrolledCourse)
+                    } catch (error) {
+                        console.error('Error enrolling in course:', error);
+                    }
+                }));
+            }
         }
+
 
         res.status(200).json({
             "status": "success",
@@ -532,10 +561,10 @@ const updateGraduate = async (req, res) => {
                         courseId: course.courseId
                     }
                 })
-                Course.Year = course.enrolled_in.year;
-                Course.Term = course.enrolled_in.Term;
-                Course.Level = course.enrolled_in.Level;
-                Course.Result = course.enrolled_in.Result;
+                Course.Year = course.Year;
+                Course.Term = course.Term;
+                Course.Level = course.Level;
+                Course.Result = course.Result;
                 await Course.save();
             }
         }else if(bylaw === "new" || bylaw === "New"){
