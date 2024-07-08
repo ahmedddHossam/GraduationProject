@@ -104,8 +104,17 @@ db.course.belongsToMany(db.graduate, {
     foreignKey: 'courseId', // foreign key in the enrolled_in table referencing course
     otherKey: 'graduateId' // foreign key in the enrolled_in table referencing graduate
 });
-db.oldBaylaweEnrolledIn.belongsTo(db.oldBaylawGraduate, {
-    foreignKey: 'graduateId', // foreign key in the enrolled_in table referencing graduate
+
+// db.oldBaylaweEnrolledIn.belongsTo(db.graduate, {
+//     foreignKey: 'GraduateId', // foreign key in the enrolled_in table referencing graduate
+// });
+db.graduate.hasMany(db.oldBaylaweEnrolledIn, {
+    foreignKey: 'GraduateId', // foreign key in the enrolled_in table referencing graduate
+
+});
+
+db.oldBaylaweEnrolledIn.belongsTo(db.course, {
+    foreignKey: 'courseId', // foreign key in the enrolled_in table referencing course
 });
 
 

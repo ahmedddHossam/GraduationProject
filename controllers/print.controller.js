@@ -89,7 +89,7 @@ const grad = asyncWrapper(
         let year = parseInt(data.id.slice(0, 4), 10);
 
         if (year >= 2000 && year <= 2008) {
-            let graduate = await oldBaylawGraduate.findOne({
+            let graduate = await db.graduate.findOne({
                 where: {
                     NationalId: data.graduateID
                 }
@@ -208,7 +208,7 @@ const verficationLetter =asyncWrapper(async (req,res)=> {
         let yearOfgrad = parseInt(data.id.slice(0, 4), 10);
 
         if (yearOfgrad >= 2000 && yearOfgrad <= 2008) {
-            let graduate = await oldBaylawGraduate.findOne(
+            let graduate = await db.graduate.findOne(
                 {
                     where:
                         {NationalId:data.graduateID

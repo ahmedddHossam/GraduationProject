@@ -6,7 +6,7 @@ const authController = require('../Controllers/AuthController')
 const allowedTo = require("../middleware/allowedTo");
 
 route.route('/signup')
-    .post(userDataValidator,allowedTo(["Super Admin"]),authController.signUp)
+    .post(authController.signUp)
 
 route.route('/login')
     .post(authController.logIn);

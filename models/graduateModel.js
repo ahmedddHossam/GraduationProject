@@ -24,19 +24,32 @@ module.exports = (Sequelize, DataTypes) => {
         },
         GPA: {
             type: DataTypes.FLOAT,
-            allowNull: false
+            allowNull: true
+        },
+        Grade: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        total_mark: {
+            type: DataTypes.STRING,
+            allowNull: true
         }
         ,projectGrade: {
             type: DataTypes.STRING,
             allowNull: false
         },
-        Department: {
+        Major: {
             type: DataTypes.STRING,
             allowNull: false
         },
+        Minor: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
         NationalId: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique:true
         },
         Nationality: {
             type: DataTypes.STRING,

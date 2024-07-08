@@ -23,8 +23,8 @@ router.get('/getAllGraduatesOfDepartment/:Department/:Year',
     , graduateController.getAllGraduatesOfDepartment);
 
 router.post('/addGraduate',
-    TokenManipulation.verifyToken,allowedTo([ "Graduate Affairs Admin"])
-    ,
+    // TokenManipulation.verifyToken,allowedTo([ "Graduate Affairs Admin"])
+    // ,
     graduateController.addGraduate)
 
 router.get('/getGraduate/:NationalId',

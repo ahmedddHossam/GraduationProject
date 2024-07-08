@@ -12,30 +12,8 @@ module.exports = (Sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: false
         },
-        arabicCourseName: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        degree: {
-            type: DataTypes.INTEGER,
-            allowNull: false 
-        },
-        grade: {
-            type: DataTypes.STRING,
-            allowNull: false 
-        },
-        semester: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        year: {
-            type: DataTypes.STRING,
-            allowNull: false
-        },
-        bylaw: {
-            type: DataTypes.STRING,
-            allowNull: false
-        }
+
+
         
     })
 

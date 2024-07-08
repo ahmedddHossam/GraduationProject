@@ -2,9 +2,10 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 module.exports = (Sequelize, DataTypes) => {
     const Enrolled_in = Sequelize.define("oldBaylawEnrolled_in" , {
-        courseId:{
-            type:DataTypes.STRING,
-            allowNull:false
+        id:{
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
         },
         courseName : {
             type:DataTypes.STRING,
