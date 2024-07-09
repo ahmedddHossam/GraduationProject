@@ -25,7 +25,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.set('io', io);
 
-const upload = multer({ dest: 'uploads/' });
 const userRouter = require('./routes/userRoute');
 const analysisRouter = require('./routes/analysisRoutes');
 const CareerRouter = require('./routes/CareerTrackerRouter');
@@ -34,6 +33,8 @@ const profileRouter = require('./routes/profileRouter')
 const initializeSocket = require('./config/socketConfig');
 const path = require('path');
 const httpStatus = require('./utils/httpStatusText');
+app.use('/uploads',express.static(path.join(__dirname,'uploads')));
+app.use('/documents',express.static(path.join(__dirname,'documents')));
 
 
 const graduateRouter = require('./routes/graduateRouter');

@@ -3,10 +3,43 @@ const {body} = require('express-validator');
 
 const  {getPostGraduateRequest,getPostGraduateAllRequest,ApplyPostGradForeinger,ApplyPostGradEgyptian,updateStatus,downloadRequestFiles} = require('../controllers/postGraduate.controller.js');
 
-const upload = require('../middleware/upload');
 const TokenManipulation = require("../utils/TokenManipulation");
 const allowedTo = require("../middleware/allowedTo");
+const multer = require("multer");
+const path = require("path");
 const router = express.Router();
+const fs = require("fs");
+const uploadPath = 'uploads/documents';
+if (!fs.existsSync(uploadPath)) {
+    fs.mkdirSync(uploadPath, { recursive: true });
+}
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/documents');
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${file.originalname}`);
+    },
+});
+
+
+
+const fileFilter = (req, file, cb) => {
+    const allowedFileTypes = /pdf|doc|docx/;
+    const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedFileTypes.test(file.mimetype);
+
+    if (extname && mimetype) {
+        return cb(null, true);
+    } else {
+        cb('Error: File type not allowed! Only PDF, Word, PNG, and JPG files are accepted.');
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    fileFilter: fileFilter,
+});
 
 
 router.route('/')

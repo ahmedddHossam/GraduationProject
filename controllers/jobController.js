@@ -168,7 +168,7 @@ const apply = asyncWrapper(async (req,res,next)=>{
 
     console.log(userEmail,jobId)
     const graduate = await db.graduate.findOne({where:{Email:userEmail }});
-
+    console.log(graduate);
     const job = db.job.findByPk(jobId);
 
 
