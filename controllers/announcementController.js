@@ -31,7 +31,7 @@ const addAnnouncement = asyncWrapper(async (req,res,next)=>{
             adminId: admin.AdminId
         });
         await newAnnounce.save();
-        return res.status(201).json({status: httpStatus.SUCCESS, data: {message: "Added successfully"}});
+        return res.status(201).json({status: httpStatus.SUCCESS, data: {data:newAnnounce,message: "Added successfully"}});
     }
     catch (err)
     {

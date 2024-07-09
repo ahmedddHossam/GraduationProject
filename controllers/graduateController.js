@@ -70,7 +70,7 @@ function validateNationalID(nationalID, birthdate) {
 async function calcFinalGrade (graduateId){
 
     // add filter to don't count failed course if he passed it
-    const all_courses = await db.enrolled_in.findAll({where:{
+    const all_courses = await db.oldBaylaweEnrolledIn.findAll({where:{
             graduateId:graduateId,
         }})
     let sum = 0;
@@ -697,7 +697,7 @@ const addGraduateCourseFromFile = asyncWrapper(async (req, res,next) => {
                     Term:row.term,
                     Year:row.year,
                     Level:row.level,
-                    graduateId:row.stud_id,
+                    GraduateId:row.stud_id,
                     creditHours : row.creditHours,
                     termWork : row.termWork,
                     examWork: row.examWork
